@@ -1,0 +1,114 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Rubik:wght@400;700&display=swap');
+
+/* CSS Variables for Themes */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #333333;
+    --header-bg: #f8f9fa;
+    --button-bg: #007bff;
+    --button-text: #ffffff;
+    --gift-bg: #f0f0f0;
+}
+
+.dark {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+    --header-bg: #1e1e1e;
+    --button-bg: #bb86fc;
+    --button-text: #000000;
+    --gift-bg: #333333;
+}
+
+/* General Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+    background-color: var(--header-bg);
+    padding: 10px;
+    text-align: center;
+}
+
+button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+#wedding-img {
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+}
+
+#gifts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.gift {
+    background-color: var(--gift-bg);
+    padding: 15px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+}
+
+.gift img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.share-buttons {
+    margin-top: 10px;
+}
+
+.share-buttons a {
+    margin: 0 5px;
+    text-decoration: none;
+    color: var(--button-bg);
+}
+
+#qr-container {
+    margin-top: 10px;
+    display: none;
+}
+
+/* Hebrew RTL */
+[dir="rtl"] {
+    direction: rtl;
+    font-family: 'Rubik', sans-serif;
+}
+
+[dir="rtl"] .gift {
+    direction: ltr; /* Keep logos LTR */
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    #gifts {
+        flex-direction: column;
+        align-items: center;
+    }
+}
