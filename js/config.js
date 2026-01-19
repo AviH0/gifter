@@ -1,24 +1,23 @@
 const config = {
-    names: {
-        en: "John & Jane",
-        he: "ג'ון וג'יין"
+    title: {
+        en: "John and Jane's Wedding",
+        he: "החתונה של ג'ון וג'יין"
     },
-    image: "/assets/wedding.jpg",
+    message: {
+        en: "Send a gift:",
+        he: "שלחו מתנה:"
+    },
+    image: "/assets/wedding.png",
     gifts: [
         {
-            name: { en: "PayPal", he: "פייפל" },
-            url: "https://paypal.me/example",
-            logo: "/assets/logos/paypal.png"
+            name: { en: "Bit", he: "ביט" },
+            url: "https://bit.co.il",
+            logo: "https://play-lh.googleusercontent.com/SovCyuQk4A0se4hmrQbf1OJXznHlfseeq9YtPh_WHe3lVMFzZcXqBGfW2J_1yYI6yQ=w240-h480-rw"
         },
         {
-            name: { en: "Venmo", he: "ונמו" },
-            url: "https://venmo.com/example",
-            logo: "/assets/logos/venmo.png"
+            name: { en: "Paybox", he: "פייבוקס" },
+            url: "https://paybox.co.il",
+            logo: "https://yt3.googleusercontent.com/ytc/AIdro_lhy54u_HxaHGFBzqnJbd6oh7cVzfpbDdxBsCFn4ohvlss=s900-c-k-c0x00ffffff-no-rj"
         },
-        {
-            name: { en: "Cash App", he: "קאש אפ" },
-            url: "https://cash.app/$example",
-            logo: "/assets/logos/cashapp.png"
-        }
     ]
 };
