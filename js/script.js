@@ -7,11 +7,9 @@ if (lang === 'he') {
 
 // Load config and populate page
 document.addEventListener('DOMContentLoaded', () => {
-    // Set base href for GitHub Pages
-    if (config.repoName) {
-        const base = document.createElement('base');
-        base.href = `/${config.repoName}/`;
-        document.head.insertBefore(base, document.head.firstChild);
+    // Update base href if repoName differs from default
+    if (config.repoName && config.repoName !== 'gifter') {
+        document.querySelector('base').href = `/${config.repoName}/`;
     }
 
     // Set background
