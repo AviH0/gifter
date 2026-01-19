@@ -1,6 +1,8 @@
-const config = {    repoName: "gifter",    title: {
-        en: "John and Jane's Wedding",
-        he: "החתונה של ג'ון וג'יין"
+const config = {
+        repoName: "gifter",
+        title: {
+        en: "English Title",
+        he: "הכותרת בעברית"
     },
     message: {
         en: "Send a gift:",
