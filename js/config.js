@@ -2,7 +2,7 @@ const config = {
         repoName: "gifter",
         fonts: {
             primary: "'Dancing Script', cursive", // Fancy font for titles
-            secondary: "'Montserrat', sans-serif" // Modern sans-serif for body
+            secondary: "'David Libre', sans-serif" // Modern sans-serif for body
         },
         title: {
         en: "English Title",
