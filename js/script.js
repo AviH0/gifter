@@ -7,6 +7,21 @@ if (lang === 'he') {
 
 // Load config and populate page
 document.addEventListener('DOMContentLoaded', () => {
+    // Set background
+    const updateBackground = () => {
+        const isDark = document.body.classList.contains('dark');
+        const bgImage = isDark ? config.backgroundDark : config.backgroundLight;
+        if (bgImage) {
+            document.body.style.backgroundImage = `url(${bgImage})`;
+            document.body.style.backgroundSize = 'contain';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundRepeat = 'no-repeat';
+            document.body.style.backgroundAttachment = 'fixed';
+        }
+    };
+
+    updateBackground();
+
     // Set title
     document.getElementById('title').textContent = config.title[lang];
 
@@ -19,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate gifts
     const giftsContainer = document.getElementById('gifts');
     config.gifts.forEach(gift => {
+        // Select random URL if array
+        gift.selectedUrl = Array.isArray(gift.url) ? gift.url[Math.floor(Math.random() * gift.url.length)] : gift.url;
+
         const giftDiv = document.createElement('div');
         giftDiv.className = 'gift';
 
@@ -26,7 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = gift.logo;
         img.alt = gift.name[lang];
         img.style.cursor = 'pointer';
-        img.onclick = () => window.open(gift.url, '_blank');
+        img.onclick = () => {
+            window.open(gift.selectedUrl, '_blank');
+        };
 
         const name = document.createElement('h3');
         name.textContent = gift.name[lang];
@@ -47,25 +67,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modal handling
     const modal = document.getElementById('share-modal');
-    const qrModal = document.getElementById('qr-modal');
     const closeBtn = document.getElementsByClassName('close')[0];
-    const qrCloseBtn = document.getElementsByClassName('qr-close')[0];
     closeBtn.onclick = () => {
         modal.style.display = 'none';
-    };
-    qrCloseBtn.onclick = () => {
-        qrModal.style.display = 'none';
+        document.getElementById('qr-display').style.display = 'none'; // Hide QR when closing
     };
     window.onclick = (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
-        }
-        if (event.target === qrModal) {
-            qrModal.style.display = 'none';
+            document.getElementById('qr-display').style.display = 'none';
         }
     };
 
     function openShareModal(gift, button) {
+        const shareUrl = gift.selectedUrl;
+
         // Position modal above button
         const rect = button.getBoundingClientRect();
         modal.style.left = rect.left + 'px';
@@ -78,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Copy link
         document.getElementById('copy-link').onclick = () => {
-            navigator.clipboard.writeText(gift.url).then(() => {
+            navigator.clipboard.writeText(shareUrl).then(() => {
                 alert(lang === 'en' ? 'Link copied!' : 'הקישור הועתק!');
             });
         };
@@ -89,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 navigator.share({
                     title: lang === 'en' ? 'Wedding Gift' : 'מתנת חתונה',
                     text: lang === 'en' ? 'Check out this wedding gift option' : 'בדוק את אפשרות מתנת החתונה הזו',
-                    url: gift.url
+                    url: shareUrl
                 });
             } else {
                 alert(lang === 'en' ? 'Sharing not supported on this device.' : 'שיתוף לא נתמך במכשיר זה.');
@@ -99,10 +115,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show QR
         document.getElementById('show-qr').onclick = () => {
             const qrDisplay = document.getElementById('qr-display');
-            qrDisplay.innerHTML = '';
-            new QRCode(qrDisplay, gift.url);
-            qrModal.style.display = 'block';
-            modal.style.display = 'none'; // Hide share modal
+            if (qrDisplay.style.display === 'block') {
+                qrDisplay.style.display = 'none';
+            } else {
+                qrDisplay.innerHTML = '';
+                new QRCode(qrDisplay, {
+                    text: shareUrl,
+                    width: 128,
+                    height: 128,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                qrDisplay.style.display = 'block';
+            }
         };
 
         modal.style.display = 'block';
@@ -120,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add(newTheme);
         localStorage.setItem('theme', newTheme);
         themeToggle.textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';
+        updateBackground();
     };
 
     // Language toggle

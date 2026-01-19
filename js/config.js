@@ -8,10 +8,12 @@ const config = {
         he: "שלחו מתנה:"
     },
     image: "/assets/wedding.png",
+    backgroundLight: "/assets/bg.jpg",
+    backgroundDark: "/assets/bg-dark.jpg",
     gifts: [
         {
             name: { en: "Bit", he: "ביט" },
-            url: "https://bit.co.il",
+            url: ["https://bit.co.il/1", "https://bit.co.il/2"],
             logo: "https://play-lh.googleusercontent.com/SovCyuQk4A0se4hmrQbf1OJXznHlfseeq9YtPh_WHe3lVMFzZcXqBGfW2J_1yYI6yQ=w240-h480-rw"
         },
         {
