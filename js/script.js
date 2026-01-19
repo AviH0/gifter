@@ -161,6 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.textContent = lang === 'en' ? 'עברית' : 'English';
     langToggle.onclick = () => {
         const newLang = lang === 'en' ? 'he' : 'en';
-        window.location.href = newLang === 'he' ? '/' : '/en/';
+        window.location.href = newLang === 'he' ? 'index.html' : 'en/index.html';
     };
 });
