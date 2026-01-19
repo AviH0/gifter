@@ -1,5 +1,5 @@
 // Determine language from path
-const lang = window.location.pathname.includes('/he/') ? 'he' : 'en';
+const lang = window.location.pathname.includes('/en/') ? 'en' : 'he';
 document.documentElement.lang = lang;
 if (lang === 'he') {
     document.documentElement.dir = 'rtl';
@@ -91,6 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.textContent = lang === 'en' ? 'עברית' : 'English';
     langToggle.onclick = () => {
         const newLang = lang === 'en' ? 'he' : 'en';
-        window.location.href = newLang === 'he' ? 'he/index.html' : 'index.html';
+        window.location.href = newLang === 'he' ? '/' : '/en/';
     };
 });
