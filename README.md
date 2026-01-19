@@ -21,4 +21,4 @@ Edit `js/config.js` to personalize:
 - **Wedding Photo**: Replace `assets/wedding.png` with your photo, and update the path in `image`.
 - **Background Images**: Add `assets/bg-light.jpg` and `assets/bg-dark.jpg` for themes, update paths in `backgroundLight` and `backgroundDark`.
 - **Fonts**: Customize `fonts.primary` (for titles, default: 'Dancing Script') and `fonts.secondary` (for body text, default: 'Montserrat'). Ensure the font is loaded in the HTML if not Google Fonts.
-- **Meta Tags**: Update `meta.title`, `meta.description`, `meta.image` (for social media previews), and `meta.url` in `config.js`. Add `assets/favicon.ico` for the page icon.
+- **Meta Tags**: Update the Open Graph and Twitter meta tags in `index.html` and `en/index.html` for social media previews. Replace the content values with your custom title, description, image URL, and site URL.

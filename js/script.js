@@ -25,17 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Function to set or update meta tags
-    function setMetaTag(attr, name, content) {
-        let meta = document.querySelector(`meta[${attr}="${name}"]`);
-        if (!meta) {
-            meta = document.createElement('meta');
-            meta.setAttribute(attr, name);
-            document.head.appendChild(meta);
-        }
-        meta.setAttribute('content', content);
-    }
-
     // Load saved theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.body.classList.add(savedTheme);
@@ -44,21 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (config.fonts) {
         document.documentElement.style.setProperty('--font-primary', config.fonts.primary);
         document.documentElement.style.setProperty('--font-secondary', config.fonts.secondary);
-    }
-
-    // Set meta tags
-    if (config.meta) {
-        document.title = config.meta.title;
-        // Open Graph
-        setMetaTag('property', 'og:title', config.meta.title);
-        setMetaTag('property', 'og:description', config.meta.description);
-        setMetaTag('property', 'og:image', config.meta.image);
-        setMetaTag('property', 'og:url', config.meta.url);
-        // Twitter
-        setMetaTag('name', 'twitter:card', 'summary_large_image');
-        setMetaTag('name', 'twitter:title', config.meta.title);
-        setMetaTag('name', 'twitter:description', config.meta.description);
-        setMetaTag('name', 'twitter:image', config.meta.image);
     }
 
     updateBackground();

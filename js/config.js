@@ -4,12 +4,6 @@ const config = {
             primary: "'Dancing Script', cursive", // Fancy font for titles
             secondary: "'Montserrat', sans-serif" // Modern sans-serif for body
         },
-        meta: {
-            title: "Wedding Gifts",
-            description: "Join us in celebrating our wedding with a special gift!",
-            image: "assets/og-image.jpg", // For social media previews
-            url: "https://yourusername.github.io/gifter/" // Update with your actual URL
-        },
         title: {
         en: "English Title",
         he: "הכותרת בעברית"
