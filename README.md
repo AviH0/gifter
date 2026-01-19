@@ -20,6 +20,4 @@ Edit `js/config.js` to personalize:
 - **Message**: Update `message.en` and `message.he` for the gift prompt.
 - **Wedding Photo**: Replace `assets/wedding.png` with your photo, and update the path in `image`.
 - **Background Images**: Add `assets/bg-light.jpg` and `assets/bg-dark.jpg` for themes, update paths in `backgroundLight` and `backgroundDark`.
-- **Gift Platforms**: Update the `gifts` array with your platforms. For random URLs, use an array like `["url1", "url2"]`. Add logos to `assets/logos/`.  
-
-Feel free to customize further as you wish (or ask your AI agent to do it for you - recommended!)
+- **Fonts**: Customize `fonts.primary` (for titles, default: 'Dancing Script') and `fonts.secondary` (for body text, default: 'Montserrat'). Ensure the font is loaded in the HTML if not Google Fonts.

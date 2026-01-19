@@ -6,7 +6,7 @@
 :root {
     --bg-color: #ffffff;
     --text-color: #333333;
-    --header-bg: rgba(248, 249, 250, 0.8);
+    --header-bg: rgba(248, 249, 250, 0.5);
     --button-bg: #007bff;
     --button-text: #ffffff;
     --gift-bg: #f0f0f0;
@@ -17,7 +17,7 @@
 .dark {
     --bg-color: #121212;
     --text-color: #ffffff;
-    --header-bg: rgba(30, 30, 30, 0.8);
+    --header-bg: rgba(30, 30, 30, 0.5);
     --button-bg: #bb86fc;
     --button-text: #000000;
     --gift-bg: #333333;
