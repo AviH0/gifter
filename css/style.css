@@ -1,39 +1,50 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Rubik:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@400;700&display=swap');
 
 /* CSS Variables for Themes */
 :root {
     --bg-color: #ffffff;
     --text-color: #333333;
-    --header-bg: #f8f9fa;
+    --header-bg: rgba(248, 249, 250, 0.8);
     --button-bg: #007bff;
     --button-text: #ffffff;
     --gift-bg: #f0f0f0;
+    --font-primary: 'Dancing Script', cursive;
+    --font-secondary: 'Montserrat', sans-serif;
 }
 
 .dark {
     --bg-color: #121212;
     --text-color: #ffffff;
-    --header-bg: #1e1e1e;
+    --header-bg: rgba(30, 30, 30, 0.8);
     --button-bg: #bb86fc;
     --button-text: #000000;
     --gift-bg: #333333;
+    --font-primary: 'Dancing Script', cursive;
+    --font-secondary: 'Montserrat', sans-serif;
 }
 
 /* General Styles */
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: var(--font-secondary);
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
     padding: 0;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s, color 0.3s, background-image 0.5s ease-in-out;
+    background-attachment: fixed;
 }
 
 header {
     background-color: var(--header-bg);
     padding: 10px;
     text-align: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
 }
 
 button {
@@ -48,7 +59,7 @@ button {
 
 main {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 80px auto 20px; /* Adjust for fixed header */
     padding: 20px;
     text-align: center;
 }
@@ -79,6 +90,11 @@ main {
     width: 100px;
     height: 100px;
     object-fit: contain;
+}
+
+h1 {
+    font-family: var(--font-primary);
+    font-size: 3em;
 }
 
 /* Hebrew RTL */

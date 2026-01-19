@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Set fonts
+    if (config.fonts) {
+        document.documentElement.style.setProperty('--font-primary', config.fonts.primary);
+        document.documentElement.style.setProperty('--font-secondary', config.fonts.secondary);
+    }
+
     updateBackground();
 
     // Set title
