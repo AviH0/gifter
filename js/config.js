@@ -12,7 +12,7 @@ const config = {
         en: "Send a gift:",
         he: "שלחו מתנה:"
     },
-    image: "assets/wedding.jpg",
+    image: "assets/wedding.jpeg",
     backgroundLight: "assets/bg-light.jpg",
     backgroundDark: "assets/bg-dark.jpg",
     gifts: [
