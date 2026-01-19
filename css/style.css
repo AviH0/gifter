@@ -1,15 +1,7 @@
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Rubik:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@400;700&display=swap');
-/* Keyframes for floating effect */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
 /* CSS Variables for Themes */
 :root {
     --bg-color: #ffffff;
@@ -77,7 +69,9 @@ main {
     width: 100%;
     height: auto;
     margin: 20px 0;
-    animation: float 3s ease-in-out infinite;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 #gifts {
