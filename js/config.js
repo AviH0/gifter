@@ -1,5 +1,4 @@
-const config = {
-    title: {
+const config = {    repoName: "gifter",    title: {
         en: "John and Jane's Wedding",
         he: "החתונה של ג'ון וג'יין"
     },

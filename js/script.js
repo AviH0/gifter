@@ -7,13 +7,20 @@ if (lang === 'he') {
 
 // Load config and populate page
 document.addEventListener('DOMContentLoaded', () => {
+    // Set base href for GitHub Pages
+    if (config.repoName) {
+        const base = document.createElement('base');
+        base.href = `/${config.repoName}/`;
+        document.head.insertBefore(base, document.head.firstChild);
+    }
+
     // Set background
     const updateBackground = () => {
         const isDark = document.body.classList.contains('dark');
         const bgImage = isDark ? config.backgroundDark : config.backgroundLight;
         if (bgImage) {
             document.body.style.backgroundImage = `url(${bgImage})`;
-            document.body.style.backgroundSize = 'contain';
+            document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundPosition = 'center';
             document.body.style.backgroundRepeat = 'no-repeat';
             document.body.style.backgroundAttachment = 'fixed';

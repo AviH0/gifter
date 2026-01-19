@@ -13,11 +13,16 @@ A simple static web app for collecting wedding gifts via various platforms. Supp
 
 ## Customization
 
-- **Names**: Edit `js/config.js` to change the bride and groom names in both languages.
-- **Wedding Photo**: Replace `assets/wedding.jpg` with your photo.
-- **Gift Platforms**: In `js/config.js`, update the `gifts` array with your preferred platforms (e.g., PayPal, Venmo). Add logos to `assets/logos/`.
-- **Themes**: The app supports light/dark themes, toggled by users.
-- **Languages**: Switch between English and Hebrew using the toggle button.
+Edit `js/config.js` to personalize:
 
-Ensure all paths are relative and files are committed.</content>
+- **Repo Name**: Change `repoName` to your GitHub repository name (default: "gifter"). This sets the base path for assets.
+- **Title**: Update `title.en` and `title.he` for the page title.
+- **Message**: Update `message.en` and `message.he` for the gift prompt.
+- **Wedding Photo**: Replace `assets/wedding.png` with your photo, and update the path in `image`.
+- **Background Images**: Add `assets/bg-light.jpg` and `assets/bg-dark.jpg` for themes, update paths in `backgroundLight` and `backgroundDark`.
+- **Gift Platforms**: Update the `gifts` array with your platforms. For random URLs, use an array like `["url1", "url2"]`. Add logos to `assets/logos/`.
+- **Themes**: Light/dark themes are automatic; backgrounds switch accordingly.
+- **Languages**: English/Hebrew toggle is built-in.
+
+Ensure all image paths are correct and committed.</content>
 <parameter name="filePath">/home/avih/projects/wedding_gifts/README.md
