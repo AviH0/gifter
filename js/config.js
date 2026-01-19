@@ -5,14 +5,14 @@ const config = {
             secondary: "'Rubik', sans-serif" // Modern sans-serif for body
         },
         title: {
-        en: "English Title",
-        he: "הכותרת בעברית"
+        en: "Sapir and Nadav's wedding!",
+        he: "החתונה של ספיר ונדב"
     },
     message: {
         en: "Send a gift:",
         he: "שלחו מתנה:"
     },
-    image: "assets/wedding.png",
+    image: "assets/wedding.jpg",
     backgroundLight: "assets/bg-light.jpg",
     backgroundDark: "assets/bg-dark.jpg",
     gifts: [
