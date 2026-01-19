@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
         meta.setAttribute('content', content);
     }
 
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.body.classList.add(savedTheme);
+
     // Set fonts
     if (config.fonts) {
         document.documentElement.style.setProperty('--font-primary', config.fonts.primary);
@@ -173,8 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.body.classList.add(savedTheme);
     themeToggle.textContent = savedTheme === 'light' ? 'Dark Mode' : 'Light Mode';
     themeToggle.onclick = () => {
         const currentTheme = document.body.classList.contains('light') ? 'light' : 'dark';
