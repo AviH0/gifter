@@ -8,9 +8,9 @@ const config = {
         en: "Send a gift:",
         he: "שלחו מתנה:"
     },
-    image: "/assets/wedding.png",
-    backgroundLight: "/assets/bg.jpg",
-    backgroundDark: "/assets/bg-dark.jpg",
+    image: "assets/wedding.png",
+    backgroundLight: "assets/bg-light.jpg",
+    backgroundDark: "assets/bg-dark.jpg",
     gifts: [
         {
             name: { en: "Bit", he: "ביט" },
