@@ -45,6 +45,12 @@ header {
     backdrop-filter: blur(10px);
 }
 
+#page-qr-btn {
+    font-size: 14px;
+    padding: 5px;
+    margin-left: 10px;
+}
+
 button {
     background-color: var(--button-bg);
     color: var(--button-text);
@@ -133,6 +139,10 @@ h1 {
     text-align: center;
 }
 
+.page-qr-modal {
+    width: 600px;
+}
+
 .close {
     color: #aaa;
     float: right;
@@ -169,4 +179,10 @@ h1 {
     padding: 0;
     width: 4px;
     height: 4px;
+}
+
+#page-qr-display {
+    width: 512px;
+    height: 512px;
+    border: 1px solid #ccc;
 }

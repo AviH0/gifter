@@ -29,6 +29,7 @@
     <header>
         <button id="theme-toggle">מצב כהה</button>
         <button id="lang-toggle">English</button>
+        <button id="page-qr-btn" title="Generate page QR code">🔗</button>
     </header>
     <main>
         <h1 id="title">החתונה של ג'ון וג'יין</h1>
@@ -51,5 +52,12 @@
         <button id="native-share">Share</button>
         <button id="show-qr">Show QR</button>
         <div id="qr-display"></div>
+    </div>
+</div><div id="page-qr-modal" class="modal page-qr-modal">
+    <div class="modal-content page-qr-content">
+        <span class="close-page-qr">&times;</span>
+        <h3>קוד QR של הדף</h3>
+        <canvas id="page-qr-display"></canvas>
+        <button id="download-qr">הורד QR</button>
     </div>
 </div>

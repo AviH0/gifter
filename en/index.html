@@ -28,6 +28,7 @@
     <header>
         <button id="theme-toggle">Dark Mode</button>
         <button id="lang-toggle">עברית</button>
+        <button id="page-qr-btn" title="Generate page QR code">🔗</button>
     </header>
     <main>
         <h1 id="title">John and Jane's Wedding</h1>
@@ -50,5 +51,13 @@
         <button id="native-share">Share</button>
         <button id="show-qr">Show QR</button>
         <div id="qr-display"></div>
+    </div>
+</div>
+<div id="page-qr-modal" class="modal page-qr-modal">
+    <div class="modal-content page-qr-content">
+        <span class="close-page-qr">&times;</span>
+        <h3>Page QR Code</h3>
+        <canvas id="page-qr-display"></canvas>
+        <button id="download-qr">Download QR</button>
     </div>
 </div>
