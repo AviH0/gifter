@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.createElement('h3');
         name.textContent = gift.name[lang];
 
+        const shareBtn = document.createElement('button');
         shareBtn.textContent = lang === 'en' ? 'Share' : 'שיתוף';
         shareBtn.onclick = (event) => {
             event.stopPropagation();
