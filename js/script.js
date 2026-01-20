@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         name.textContent = gift.name[lang];
 
         const shareBtn = document.createElement('button');
-        shareBtn.textContent = lang === 'en' ? 'Share' : 'שתף';
+        shareBtn.textContent = lang === 'en' ? 'Share' : '';
         shareBtn.onclick = (event) => {
             event.stopPropagation();
             openShareModal(gift, shareBtn);
@@ -102,9 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.left = rect.left + 'px';
         modal.style.top = (rect.top - 250) + 'px'; // Above
 
-        document.getElementById('modal-title').textContent = lang === 'en' ? 'Share' : 'שתף';
+        document.getElementById('modal-title').textContent = lang === 'en' ? 'Share' : '';
         document.getElementById('copy-link').textContent = lang === 'en' ? 'Copy Link' : 'העתק קישור';
-        document.getElementById('native-share').textContent = lang === 'en' ? 'Share' : 'שתף';
+        document.getElementById('native-share').textContent = lang === 'en' ? 'Share External' : 'שיתוף חיצוני';
         document.getElementById('show-qr').textContent = lang === 'en' ? 'Show QR' : 'הצג QR';
 
         // Copy link
