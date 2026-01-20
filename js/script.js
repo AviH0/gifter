@@ -66,8 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.createElement('h3');
         name.textContent = gift.name[lang];
 
-        const shareBtn = document.createElement('button');
-        shareBtn.textContent = lang === 'en' ? 'Share' : '';
+        shareBtn.textContent = lang === 'en' ? 'Share' : 'שיתוף';
         shareBtn.onclick = (event) => {
             event.stopPropagation();
             openShareModal(gift, shareBtn);
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.left = rect.left + 'px';
         modal.style.top = (rect.top - 250) + 'px'; // Above
 
-        document.getElementById('modal-title').textContent = lang === 'en' ? 'Share' : '';
+        document.getElementById('modal-title').textContent = lang === 'en' ? 'Share' : 'שיתוף';
         document.getElementById('copy-link').textContent = lang === 'en' ? 'Copy Link' : 'העתק קישור';
         document.getElementById('native-share').textContent = lang === 'en' ? 'Share External' : 'שיתוף חיצוני';
         document.getElementById('show-qr').textContent = lang === 'en' ? 'Show QR' : 'הצג QR';
@@ -168,5 +167,71 @@ document.addEventListener('DOMContentLoaded', () => {
     langToggle.onclick = () => {
         const newLang = lang === 'en' ? 'he' : 'en';
         window.location.href = newLang === 'he' ? 'index.html' : 'en/index.html';
+    };
+
+    // Page QR button
+    const pageQrBtn = document.getElementById('page-qr-btn');
+    const pageQrModal = document.getElementById('page-qr-modal');
+    const closePageQr = document.getElementsByClassName('close-page-qr')[0];
+    const downloadQr = document.getElementById('download-qr');
+    pageQrBtn.onclick = () => {
+        const pageUrl = window.location.href;
+        const canvas = document.getElementById('page-qr-display');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Generate QR as image first
+        const tempDiv = document.createElement('div');
+        new QRCode(tempDiv, {
+            text: pageUrl,
+            width: 512,
+            height: 512,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        const qrImg = tempDiv.querySelector('img');
+        qrImg.onload = () => {
+            ctx.drawImage(qrImg, 0, 0);
+            // Add logo
+            const logo = new Image();
+            logo.onload = () => {
+                const logoSize = 128;
+                const x = (512 - logoSize) / 2;
+                const y = (512 - logoSize) / 2;
+                // Draw white background for logo
+                ctx.fillStyle = 'white';
+                ctx.fillRect(x, y, logoSize, logoSize);
+                // Enable smoothing for logo
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                ctx.drawImage(logo, x, y, logoSize, logoSize);
+            };
+            logo.src = 'assets/logos/gift-logo.jpeg';
+        };
+        pageQrModal.style.display = 'block';
+        // Position under the button, centered horizontally
+        const rect = pageQrBtn.getBoundingClientRect();
+        const modalWidth = pageQrModal.offsetWidth;
+        pageQrModal.style.left = (rect.left + rect.width / 2 - modalWidth / 2) + 'px';
+        pageQrModal.style.top = (rect.bottom + 10) + 'px';
+    };
+    closePageQr.onclick = () => {
+        pageQrModal.style.display = 'none';
+    };
+    downloadQr.onclick = () => {
+        const canvas = document.getElementById('page-qr-display');
+        const link = document.createElement('a');
+        link.download = 'page-qr.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+    window.onclick = (event) => {
+        if (event.target === pageQrModal) {
+            pageQrModal.style.display = 'none';
+        }
     };
 });
