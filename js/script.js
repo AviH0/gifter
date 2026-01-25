@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const giftDiv = document.createElement('div');
         giftDiv.className = 'gift';
-
+        giftDiv.style.cursor = 'pointer'
         const img = document.createElement('img');
         img.src = gift.logo;
         img.alt = gift.name[lang];
         img.style.cursor = 'pointer';
-        img.onclick = () => {
+        giftDiv.onclick = () => {
             window.open(gift.selectedUrl, '_blank');
         };
 
