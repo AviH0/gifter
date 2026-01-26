@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Populate gifts
     const giftsContainer = document.getElementById('gifts');
+    giftsContainer.innerHTML = '';
     config.gifts.forEach(gift => {
         // Select random URL if array
         gift.selectedUrl = Array.isArray(gift.url) ? gift.url[Math.floor(Math.random() * gift.url.length)] : gift.url;
