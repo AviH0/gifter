@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Generate QR as image first
+        // Generate QR in temp div
         const tempDiv = document.createElement('div');
         new QRCode(tempDiv, {
             text: pageUrl,
@@ -195,25 +195,28 @@ document.addEventListener('DOMContentLoaded', () => {
             colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
         });
-        const qrImg = tempDiv.querySelector('img');
-        qrImg.onload = () => {
-            ctx.drawImage(qrImg, 0, 0);
-            // Add logo
-            const logo = new Image();
-            logo.onload = () => {
-                const logoSize = 128;
-                const x = (512 - logoSize) / 2;
-                const y = (512 - logoSize) / 2;
-                // Draw white background for logo
-                ctx.fillStyle = 'white';
-                ctx.fillRect(x, y, logoSize, logoSize);
-                // Enable smoothing for logo
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                ctx.drawImage(logo, x, y, logoSize, logoSize);
-            };
-            logo.src = 'assets/logos/gift-logo.jpeg';
+        // Get the generated canvas
+        const qrCanvas = tempDiv.querySelector('canvas');
+        if (qrCanvas) {
+            ctx.drawImage(qrCanvas, 0, 0);
+        }
+        
+        // Add logo
+        const logo = new Image();
+        logo.onload = () => {
+            const logoSize = 128;
+            const x = (512 - logoSize) / 2;
+            const y = (512 - logoSize) / 2;
+            // Draw white background for logo
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x, y, logoSize, logoSize);
+            // Enable smoothing for logo
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(logo, x, y, logoSize, logoSize);
         };
+        logo.src = 'assets/logos/gift-logo.jpeg';
+        
         pageQrModal.style.display = 'block';
         // Position under the button, centered horizontally
         const rect = pageQrBtn.getBoundingClientRect();
