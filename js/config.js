@@ -23,7 +23,7 @@ const config = {
         },
         {
             name: { en: "Paybox", he: "פייבוקס" },
-            url: ["https://links.payboxapp.com/qIwkpHwmz0b"],
+            url: ["https://links.payboxapp.com/qIwkpHwmz0b", "https://links.payboxapp.com/pgJnhCAtA0b"],
             logo: "https://yt3.googleusercontent.com/ytc/AIdro_lhy54u_HxaHGFBzqnJbd6oh7cVzfpbDdxBsCFn4ohvlss=s900-c-k-c0x00ffffff-no-rj"
         },
     ]
