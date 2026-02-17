@@ -1,0 +1,16 @@
+{
+  "name": "wedding-gifts-scripts",
+  "version": "1.0.0",
+  "description": "Setup and testing scripts for multi-event wedding gifts platform",
+  "private": true,
+  "scripts": {
+    "test-encryption": "node test-encryption.js"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
