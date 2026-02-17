@@ -35,7 +35,7 @@ async function loadConfig() {
             const repo = `${githubUser}/${repoName}`;
             
             // Try jsDelivr CDN first (faster)
-            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/events/${eventId}/config.enc`;
+            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/events/${eventId}/config.enc`;
             
             console.log(`Loading event from: ${cdnUrl}`);
             
@@ -44,7 +44,7 @@ async function loadConfig() {
             // Fallback to GitHub raw if CDN fails
             if (!response.ok) {
                 console.log('CDN failed, trying GitHub raw...');
-                const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/events/${eventId}/config.enc`;
+                const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/public/events/${eventId}/config.enc`;
                 response = await fetch(rawUrl);
             }
             

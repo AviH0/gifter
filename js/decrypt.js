@@ -94,7 +94,7 @@ async function decryptConfig(ciphertext, passphrase) {
  */
 async function loadEventConfig(eventId, key, repo, branch) {
   // Try jsDelivr CDN first (with purge for fresh data)
-  const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/events/${eventId}/config.enc`;
+  const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/events/${eventId}/config.enc`;
   
   try {
     const response = await fetch(cdnUrl);
@@ -109,7 +109,7 @@ async function loadEventConfig(eventId, key, repo, branch) {
     console.error('Failed to load from CDN:', error);
     
     // Fallback to GitHub raw
-    const githubUrl = `https://raw.githubusercontent.com/${repo}/${branch}/events/${eventId}/config.enc`;
+    const githubUrl = `https://raw.githubusercontent.com/${repo}/${branch}/public/events/${eventId}/config.enc`;
     const response = await fetch(githubUrl);
     
     if (!response.ok) {
