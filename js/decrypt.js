@@ -136,3 +136,87 @@ async function loadEventConfig(eventId, key, repo, branch) {
     return JSON.parse(decryptedJson);
   }
 }
+
+/**
+ * Decrypt binary data (for images)
+ * @param {string} base64Data - Base64 encoded encrypted image
+ * @param {string} passphrase - Decryption key
+ * @return {Promise<Blob>} Decrypted image blob
+ */
+async function decryptImage(base64Data, passphrase) {
+  try {
+    // Decode from base64
+    const binaryString = atob(base64Data);
+    const fullData = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      fullData[i] = binaryString.charCodeAt(i);
+    }
+    
+    // Check for "Salted__" header
+    const header = bytesToString(fullData.slice(0, 8));
+    
+    if (header !== 'Salted__') {
+      throw new Error('Invalid image encryption header');
+    }
+    
+    // Extract salt and encrypted data
+    const salt = fullData.slice(8, 16);
+    const encrypted = fullData.slice(16);
+    
+    // Derive key from passphrase and salt
+    const saltString = bytesToString(salt);
+    const keyMaterial = passphrase + saltString;
+    const keyBytes = await sha256(keyMaterial);
+    
+    // XOR decryption
+    const decrypted = new Uint8Array(encrypted.length);
+    for (let i = 0; i < encrypted.length; i++) {
+      decrypted[i] = encrypted[i] ^ keyBytes[i % keyBytes.length];
+    }
+    
+    // Return as Blob
+    return new Blob([decrypted]);
+  } catch (error) {
+    console.error('Image decryption error:', error);
+    throw new Error('Failed to decrypt image: ' + error.message);
+  }
+}
+
+/**
+ * Load and decrypt image, return as object URL
+ * @param {string} imagePath - Path to encrypted image (e.g., "public/events/uuid/wedding.enc")
+ * @param {string} key - Decryption key
+ * @param {string} repo - GitHub repo
+ * @param {string} branch - Git branch
+ * @return {Promise<string>} Object URL for decrypted image
+ */
+async function loadEncryptedImage(imagePath, key, repo, branch) {
+  try {
+    // Try CDN first
+    const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${imagePath}`;
+    
+    let response;
+    try {
+      response = await fetch(cdnUrl);
+      if (!response.ok) throw new Error('CDN fetch failed');
+    } catch (cdnError) {
+      // Fallback to GitHub raw
+      const githubUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${imagePath}`;
+      response = await fetch(githubUrl);
+    }
+    
+    if (!response.ok) {
+      throw new Error(`Failed to load image: ${response.statusText}`);
+    }
+    
+    const base64Data = await response.text();
+    const imageBlob = await decryptImage(base64Data, key);
+    
+    // Create object URL
+    return URL.createObjectURL(imageBlob);
+  } catch (error) {
+    console.error('Failed to load encrypted image:', imagePath, error);
+    return null; // Return null if image can't be loaded
+  }
+}
+

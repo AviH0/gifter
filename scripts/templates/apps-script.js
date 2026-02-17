@@ -111,10 +111,17 @@ function onFormSubmit(e) {
     // Process and upload images (if any)
     const images = processImages(e.response, uuid);
     
-    // Update image paths in config
-    if (images.wedding) config.image = 'events/' + uuid + '/wedding.jpg';
-    if (images.bgLight) config.backgroundLight = 'events/' + uuid + '/bg-light.jpg';
-    if (images.bgDark) config.backgroundDark = 'events/' + uuid + '/bg-dark.jpg';
+    // Update image paths in config (encrypted images)
+    if (images.wedding) config.image = 'public/events/' + uuid + '/wedding.enc';
+    if (images.bgLight) config.backgroundLight = 'public/events/' + uuid + '/bg-light.enc';
+    if (images.bgDark) config.backgroundDark = 'public/events/' + uuid + '/bg-dark.enc';
+    
+    // Encrypt images
+    const encryptedImages = {
+      wedding: images.wedding ? encryptBinary(images.wedding.getBytes(), key) : null,
+      bgLight: images.bgLight ? encryptBinary(images.bgLight.getBytes(), key) : null,
+      bgDark: images.bgDark ? encryptBinary(images.bgDark.getBytes(), key) : null
+    };
     
     // Encrypt config
     const configJson = JSON.stringify(config, null, 2);
@@ -123,7 +130,7 @@ function onFormSubmit(e) {
     Logger.log('Config encrypted');
     
     // Commit to GitHub
-    commitToGitHub(uuid, encrypted, images, email, key, !!existing);
+    commitToGitHub(uuid, encrypted, encryptedImages, email, key, !!existing);
     
     Logger.log('Committed to GitHub');
     
@@ -457,20 +464,55 @@ function encryptAES(plaintext, passphrase) {
     const saltString = String.fromCharCode.apply(null, salt);
     
     // Derive key from passphrase and salt using SHA-256
+    // CRITICAL: Must match browser's TextEncoder UTF-8 encoding
     const keyMaterial = passphrase + saltString;
-    const keyBytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterial);
     
-    // Simple XOR encryption (NOT SECURE but compatible)
-    // For production, use external encryption service
-    const textBytes = Utilities.newBlob(plaintext).getBytes();
+    // Convert keyMaterial to UTF-8 bytes array manually
+    const keyMaterialUtf8 = [];
+    for (let i = 0; i < keyMaterial.length; i++) {
+      const code = keyMaterial.charCodeAt(i);
+      if (code < 128) {
+        keyMaterialUtf8.push(code);
+      } else if (code < 2048) {
+        keyMaterialUtf8.push(192 | (code >> 6));
+        keyMaterialUtf8.push(128 | (code & 63));
+      } else {
+        keyMaterialUtf8.push(224 | (code >> 12));
+        keyMaterialUtf8.push(128 | ((code >> 6) & 63));
+        keyMaterialUtf8.push(128 | (code & 63));
+      }
+    }
+    
+    // Hash with SHA-256 (returns signed bytes)
+    const keyBytesSigned = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterialUtf8);
+    
+    // Normalize to unsigned bytes (0-255)
+    const keyBytes = keyBytesSigned.map(function(b) { return b & 0xFF; });
+    
+    // Convert plaintext to UTF-8 bytes manually
+    const textBytes = [];
+    for (let i = 0; i < plaintext.length; i++) {
+      const code = plaintext.charCodeAt(i);
+      if (code < 128) {
+        textBytes.push(code);
+      } else if (code < 2048) {
+        textBytes.push(192 | (code >> 6));
+        textBytes.push(128 | (code & 63));
+      } else {
+        textBytes.push(224 | (code >> 12));
+        textBytes.push(128 | ((code >> 6) & 63));
+        textBytes.push(128 | (code & 63));
+      }
+    }
+    
+    // XOR encryption
     const encrypted = [];
-    
     for (let i = 0; i < textBytes.length; i++) {
       encrypted.push(textBytes[i] ^ keyBytes[i % keyBytes.length]);
     }
     
     // Format: "Salted__" + salt (8 bytes) + encrypted data
-    const header = Utilities.newBlob('Salted__').getBytes();
+    const header = [83, 97, 108, 116, 101, 100, 95, 95]; // "Salted__" in bytes
     const fullData = header.concat(salt, encrypted);
     
     // Return as base64
@@ -481,6 +523,65 @@ function encryptAES(plaintext, passphrase) {
     Logger.log('WARNING: Using fallback base64 encoding (NOT ENCRYPTED)');
     return Utilities.base64Encode(plaintext);
   }
+}
+
+/**
+ * Encrypt binary data (for images)
+ * @param {number[]} binaryData - Array of bytes from image
+ * @param {string} passphrase - Encryption key
+ * @return {number[]} Encrypted binary array (NOT base64)
+ */
+function encryptBinary(binaryData, passphrase) {
+  try {
+    // Generate random salt
+    const salt = generateSalt();
+    const saltString = String.fromCharCode.apply(null, salt);
+    
+    // Derive key from passphrase and salt
+    const keyMaterial = passphrase + saltString;
+    const keyMaterialUtf8 = stringToUtf8Bytes(keyMaterial);
+    const keyBytesSigned = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterialUtf8);
+    const keyBytes = keyBytesSigned.map(function(b) { return b & 0xFF; });
+    
+    // XOR encryption on binary data
+    const encrypted = [];
+    for (let i = 0; i < binaryData.length; i++) {
+      const byte = (typeof binaryData[i] === 'number' ? binaryData[i] : binaryData[i].charCodeAt(0)) & 0xFF;
+      encrypted.push(byte ^ keyBytes[i % keyBytes.length]);
+    }
+    
+    // Format: "Salted__" + salt (8 bytes) + encrypted data
+    const header = [83, 97, 108, 116, 101, 100, 95, 95]; // "Salted__"
+    return header.concat(salt, encrypted);
+  } catch (error) {
+    Logger.log('Binary encryption error: ' + error.toString());
+    // Return unencrypted data as fallback
+    Logger.log('WARNING: Image not encrypted!');
+    return binaryData;
+  }
+}
+
+/**
+ * Helper: Convert string to UTF-8 bytes (used in encryption)
+ * @param {string} str - String to convert
+ * @return {number[]} Array of UTF-8 bytes
+ */
+function stringToUtf8Bytes(str) {
+  const bytes = [];
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code < 128) {
+      bytes.push(code);
+    } else if (code < 2048) {
+      bytes.push(192 | (code >> 6));
+      bytes.push(128 | (code & 63));
+    } else {
+      bytes.push(224 | (code >> 12));
+      bytes.push(128 | ((code >> 6) & 63));
+      bytes.push(128 | (code & 63));
+    }
+  }
+  return bytes;
 }
 
 /**
@@ -518,12 +619,12 @@ function generateSalt() {
  * Commit encrypted config and images to GitHub
  * @param {string} uuid - Event UUID
  * @param {string} encryptedConfig - Encrypted config string
- * @param {Object} images - Object with image blobs
+ * @param {Object} encryptedImages - Object with encrypted image arrays (not blobs)
  * @param {string} email - User email
  * @param {string} key - Encryption key
  * @param {boolean} isUpdate - Whether this is an update
  */
-function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
+function commitToGitHub(uuid, encryptedConfig, encryptedImages, email, key, isUpdate) {
   const props = PropertiesService.getScriptProperties();
   const token = props.getProperty('GITHUB_TOKEN');
   const repo = props.getProperty('GITHUB_REPO');
@@ -566,34 +667,34 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
     isUpdate
   );
   
-  // Commit images if provided
-  if (images.wedding) {
+  // Commit encrypted images if provided
+  if (encryptedImages.wedding) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/wedding.jpg',
-      images.wedding,
-      'Add wedding image for ' + uuid,
+      baseUrl + 'public/events/' + uuid + '/wedding.enc',
+      encryptedImages.wedding,
+      'Add encrypted wedding image for ' + uuid,
       branch,
       headers,
       isUpdate
     );
   }
   
-  if (images.bgLight) {
+  if (encryptedImages.bgLight) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/bg-light.jpg',
-      images.bgLight,
-      'Add light background for ' + uuid,
+      baseUrl + 'public/events/' + uuid + '/bg-light.enc',
+      encryptedImages.bgLight,
+      'Add encrypted light background for ' + uuid,
       branch,
       headers,
       isUpdate
     );
   }
   
-  if (images.bgDark) {
+  if (encryptedImages.bgDark) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/bg-dark.jpg',
-      images.bgDark,
-      'Add dark background for ' + uuid,
+      baseUrl + 'public/events/' + uuid + '/bg-dark.enc',
+      encryptedImages.bgDark,
+      'Add encrypted dark background for ' + uuid,
       branch,
       headers,
       isUpdate
@@ -608,17 +709,21 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
  * @param {string} message - Commit message
  * @param {string} branch - Branch name
  * @param {Object} headers - Request headers
- * @param {boolean} isUpdate - Whether this is an update (requires SHA)
+ * @param {boolean|string} isUpdateOrSha - If true, fetches SHA. If string, uses as SHA. If false, creates new file.
  */
-function commitFile(url, content, message, branch, headers, isUpdate) {
+function commitFile(url, content, message, branch, headers, isUpdateOrSha) {
   const payload = {
     message: message,
     content: Utilities.base64Encode(content),
     branch: branch
   };
   
-  // If updating, get current file SHA
-  if (isUpdate) {
+  // Handle SHA
+  if (typeof isUpdateOrSha === 'string') {
+    // SHA provided directly
+    payload.sha = isUpdateOrSha;
+  } else if (isUpdateOrSha === true) {
+    // Fetch SHA
     try {
       const response = UrlFetchApp.fetch(url, {
         method: 'get',
@@ -634,6 +739,7 @@ function commitFile(url, content, message, branch, headers, isUpdate) {
       Logger.log('Could not get SHA (file may not exist): ' + err.toString());
     }
   }
+  // If isUpdateOrSha is false or undefined, create new file (no SHA needed)
   
   const options = {
     method: 'put',
@@ -654,16 +760,26 @@ function commitFile(url, content, message, branch, headers, isUpdate) {
 /**
  * Commit a binary file to GitHub
  * @param {string} url - GitHub API URL
- * @param {Blob} blob - File blob
+ * @param {number[]|Blob} binaryData - Encrypted byte array or Blob
  * @param {string} message - Commit message
  * @param {string} branch - Branch name
  * @param {Object} headers - Request headers
  * @param {boolean} isUpdate - Whether this is an update (requires SHA)
  */
-function commitBinaryFile(url, blob, message, branch, headers, isUpdate) {
+function commitBinaryFile(url, binaryData, message, branch, headers, isUpdate) {
+  // Handle both byte arrays and Blobs
+  let bytes;
+  if (Array.isArray(binaryData)) {
+    bytes = binaryData; // Already a byte array from encryptBinary()
+  } else if (binaryData.getBytes) {
+    bytes = binaryData.getBytes(); // Blob object
+  } else {
+    throw new Error('Invalid binary data type');
+  }
+  
   const payload = {
     message: message,
-    content: Utilities.base64Encode(blob.getBytes()),
+    content: Utilities.base64Encode(bytes),
     branch: branch
   };
   
@@ -746,10 +862,17 @@ function getEventByEmail(email) {
     ).getDataAsString();
     
     // Decrypt registry
-    // Note: You'll need to implement decryptAES (reverse of encryptAES)
-    // For now, using a placeholder
     const registryJson = decryptAES(encryptedRegistry, masterKey);
-    const registry = JSON.parse(registryJson);
+    
+    // Try to parse JSON - if it fails, registry is corrupted (old encryption)
+    let registry;
+    try {
+      registry = JSON.parse(registryJson);
+    } catch (parseErr) {
+      Logger.log('Registry file corrupted (encrypted with old code). Will be recreated on next update.');
+      Logger.log('Decryption produced: ' + registryJson.substring(0, 50) + '...');
+      return null;
+    }
     
     if (registry[email]) {
       return registry[email];
@@ -795,14 +918,23 @@ function updateRegistry(email, uuid, key, isUpdate) {
     
     if (response.getResponseCode() === 200) {
       const fileData = JSON.parse(response.getContentText());
-      registrySha = fileData.sha;
+      const fileSha = fileData.sha;
       
       const encryptedRegistry = Utilities.newBlob(
         Utilities.base64Decode(fileData.content)
       ).getDataAsString();
       
-      const registryJson = decryptAES(encryptedRegistry, masterKey);
-      registry = JSON.parse(registryJson);
+      try {
+        const registryJson = decryptAES(encryptedRegistry, masterKey);
+        registry = JSON.parse(registryJson);
+        registrySha = fileSha; // Only set SHA if decryption succeeded
+        Logger.log('Loaded existing registry with ' + Object.keys(registry).length + ' entries');
+      } catch (decryptErr) {
+        Logger.log('Registry corrupted (old encryption). Will be overwritten with fresh registry.');
+        Logger.log('Decryption error: ' + decryptErr.toString());
+        registry = {}; // Start fresh
+        registrySha = fileSha; // Need SHA to overwrite the corrupted file
+      }
     }
   } catch (err) {
     Logger.log('Could not fetch existing registry: ' + err.toString());
@@ -832,7 +964,7 @@ function updateRegistry(email, uuid, key, isUpdate) {
     'Update registry',
     branch,
     headers,
-    registrySha !== null
+    registrySha // Pass SHA directly (or null for new file)
   );
   
   Logger.log('Registry updated for: ' + email);
@@ -846,21 +978,49 @@ function updateRegistry(email, uuid, key, isUpdate) {
  */
 function decryptAES(ciphertext, passphrase) {
   try {
-    // Decode from base64
-    const fullData = Utilities.base64Decode(ciphertext);
+    // Decode from base64 (returns signed bytes)
+    const fullDataSigned = Utilities.base64Decode(ciphertext);
+    
+    // Normalize to unsigned bytes
+    const fullData = [];
+    for (let i = 0; i < fullDataSigned.length; i++) {
+      fullData.push(fullDataSigned[i] & 0xFF);
+    }
     
     // Check for "Salted__" header
-    const header = Utilities.newBlob(fullData.slice(0, 8)).getDataAsString();
+    const header = String.fromCharCode.apply(null, fullData.slice(0, 8));
     
     if (header === 'Salted__') {
       // Extract salt and encrypted data
-      const salt = Array.from(fullData.slice(8, 16));
-      const encrypted = Array.from(fullData.slice(16));
+      const salt = fullData.slice(8, 16);
+      const encrypted = fullData.slice(16);
       
-      // Derive key from passphrase and salt
+      // Derive key from passphrase and salt (must match encryptAES)
       const saltString = String.fromCharCode.apply(null, salt);
       const keyMaterial = passphrase + saltString;
-      const keyBytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterial);
+      
+      // Convert to UTF-8 bytes manually
+      const keyMaterialUtf8 = [];
+      for (let i = 0; i < keyMaterial.length; i++) {
+        const code = keyMaterial.charCodeAt(i);
+        if (code < 128) {
+          keyMaterialUtf8.push(code);
+        } else if (code < 2048) {
+          keyMaterialUtf8.push(192 | (code >> 6));
+          keyMaterialUtf8.push(128 | (code & 63));
+        } else {
+          keyMaterialUtf8.push(224 | (code >> 12));
+          keyMaterialUtf8.push(128 | ((code >> 6) & 63));
+          keyMaterialUtf8.push(128 | (code & 63));
+        }
+      }
+      
+      // Hash with SHA-256 and normalize to unsigned
+      const keyBytesSigned = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterialUtf8);
+      const keyBytes = [];
+      for (let i = 0; i < keyBytesSigned.length; i++) {
+        keyBytes.push(keyBytesSigned[i] & 0xFF);
+      }
       
       // XOR decryption
       const decrypted = [];
@@ -868,11 +1028,28 @@ function decryptAES(ciphertext, passphrase) {
         decrypted.push(encrypted[i] ^ keyBytes[i % keyBytes.length]);
       }
       
-      return Utilities.newBlob(decrypted).getDataAsString();
+      // Convert UTF-8 bytes back to string
+      let result = '';
+      let i = 0;
+      while (i < decrypted.length) {
+        const byte1 = decrypted[i++];
+        if (byte1 < 128) {
+          result += String.fromCharCode(byte1);
+        } else if (byte1 < 224) {
+          const byte2 = decrypted[i++];
+          result += String.fromCharCode(((byte1 & 31) << 6) | (byte2 & 63));
+        } else {
+          const byte2 = decrypted[i++];
+          const byte3 = decrypted[i++];
+          result += String.fromCharCode(((byte1 & 15) << 12) | ((byte2 & 63) << 6) | (byte3 & 63));
+        }
+      }
+      
+      return result;
     } else {
       // Fallback: assume it's just base64 encoded
       Logger.log('WARNING: No encryption header found, treating as base64');
-      return Utilities.newBlob(fullData).getDataAsString();
+      return Utilities.newBlob(fullDataSigned).getDataAsString();
     }
   } catch (error) {
     Logger.log('Decryption error: ' + error.toString());
@@ -986,21 +1163,77 @@ function testSetup() {
  * Run this to verify encryption is working
  */
 function testEncryption() {
-  const testData = 'Hello, World!';
-  const testKey = 'test-key-32-characters-long!!';
+  Logger.log('=== Testing Encryption/Decryption ===\n');
   
-  Logger.log('Original: ' + testData);
+  // Test 1: Simple ASCII text
+  Logger.log('Test 1: ASCII text');
+  const testData1 = 'Hello, World!';
+  const testKey1 = 'test-key-32-characters-long!!';
   
-  const encrypted = encryptAES(testData, testKey);
-  Logger.log('Encrypted: ' + encrypted);
+  Logger.log('  Original: ' + testData1);
+  const encrypted1 = encryptAES(testData1, testKey1);
+  Logger.log('  Encrypted (base64): ' + encrypted1);
+  const decrypted1 = decryptAES(encrypted1, testKey1);
+  Logger.log('  Decrypted: ' + decrypted1);
+  Logger.log('  Match: ' + (decrypted1 === testData1 ? '✓ PASS' : '✗ FAIL'));
+  Logger.log('');
   
-  const decrypted = decryptAES(encrypted, testKey);
-  Logger.log('Decrypted: ' + decrypted);
+  // Test 2: JSON object
+  Logger.log('Test 2: JSON object');
+  const testData2 = JSON.stringify({test: 'hello', number: 123, array: [1,2,3]});
+  const testKey2 = 'another-test-key-32-chars!!!';
   
-  if (decrypted === testData) {
-    Logger.log('✓ Encryption/Decryption working!');
+  Logger.log('  Original: ' + testData2);
+  const encrypted2 = encryptAES(testData2, testKey2);
+  Logger.log('  Encrypted (base64): ' + encrypted2);
+  const decrypted2 = decryptAES(encrypted2, testKey2);
+  Logger.log('  Decrypted: ' + decrypted2);
+  Logger.log('  Match: ' + (decrypted2 === testData2 ? '✓ PASS' : '✗ FAIL'));
+  Logger.log('');
+  
+  // Test 3: Hebrew text (UTF-8 test)
+  Logger.log('Test 3: Hebrew text (UTF-8)');
+  const testData3 = 'שלום עולם';
+  const testKey3 = 'test-key-with-hebrew-support!';
+  
+  Logger.log('  Original: ' + testData3);
+  const encrypted3 = encryptAES(testData3, testKey3);
+  Logger.log('  Encrypted (base64): ' + encrypted3);
+  const decrypted3 = decryptAES(encrypted3, testKey3);
+  Logger.log('  Decrypted: ' + decrypted3);
+  Logger.log('  Match: ' + (decrypted3 === testData3 ? '✓ PASS' : '✗ FAIL'));
+  Logger.log('');
+  
+  // Test 4: Verify format for browser compatibility
+  Logger.log('Test 4: Browser compatibility check');
+  const testData4 = '{"test":"data"}';
+  const testKey4 = 'browser-test-key-32-chars!!!';
+  const encrypted4 = encryptAES(testData4, testKey4);
+  
+  // Decode to check format
+  const decoded = Utilities.base64Decode(encrypted4);
+  const header = String.fromCharCode.apply(null, [decoded[0] & 0xFF, decoded[1] & 0xFF, decoded[2] & 0xFF, 
+                                                    decoded[3] & 0xFF, decoded[4] & 0xFF, decoded[5] & 0xFF,
+                                                    decoded[6] & 0xFF, decoded[7] & 0xFF]);
+  
+  Logger.log('  Header check: ' + (header === 'Salted__' ? '✓ PASS' : '✗ FAIL (got: "' + header + '")'));
+  Logger.log('  Encrypted (base64) - Copy this to test in browser console:');
+  Logger.log('  ' + encrypted4);
+  Logger.log('');
+  Logger.log('  Test in browser console with:');
+  Logger.log('  decryptConfig("' + encrypted4 + '", "' + testKey4 + '").then(r => console.log("Result:", r))');
+  Logger.log('');
+  
+  // Summary
+  const allPassed = (decrypted1 === testData1) && (decrypted2 === testData2) && 
+                    (decrypted3 === testData3) && (header === 'Salted__');
+  
+  Logger.log('=== Summary ===');
+  if (allPassed) {
+    Logger.log('✓ All tests PASSED! Encryption is working correctly.');
+    Logger.log('✓ You can now submit the form to create a new event.');
   } else {
-    Logger.log('✗ Encryption/Decryption failed!');
+    Logger.log('✗ Some tests FAILED. Check the output above.');
   }
 }
 
