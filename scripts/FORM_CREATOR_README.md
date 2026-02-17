@@ -294,6 +294,8 @@ Open the edit URL and verify all fields are correct:
 
 The script creates a form with these fields (file uploads must be added manually):
 
+### Basic Information
+
 | Field Name | Type | Required | Description |
 |------------|------|----------|-------------|
 | אימייל | Email | ✅ Yes | User's email address |
@@ -304,14 +306,34 @@ The script creates a form with these fields (file uploads must be added manually
 | **תמונת האירוע** | **File Upload** | **❌ No** | **⚠️ Add manually** |
 | **רקע בהיר** | **File Upload** | **❌ No** | **⚠️ Add manually** |
 | **רקע כהה** | **File Upload** | **❌ No** | **⚠️ Add manually** |
-| מתנה 1 - שם (אנגלית) | Text | ✅ Yes | Gift 1 name (English) |
-| מתנה 1 - שם (עברית) | Text | ❌ No | Gift 1 name (Hebrew) |
-| מתנה 1 - קישור 1 | Text | ✅ Yes | Gift 1 URL 1 |
-| מתנה 1 - קישור 2 | Text | ❌ No | Gift 1 URL 2 |
-| מתנה 1 - לוגו | Text | ❌ No | Gift 1 logo URL |
-| ... | ... | ... | *Repeats for each gift* |
 
-**Note:** First gift is required, additional gifts are optional.
+### Gift Options (Organized in Sections with Page Breaks)
+
+**First Gift (Required):**
+
+| Field Name | Type | Required | Description |
+|------------|------|----------|-------------|
+| שם אמצעי התשלום (אנגלית) | Text | ✅ Yes | Payment method name (English) |
+| שם אמצעי התשלום (עברית) | Text | ❌ No | Payment method name (Hebrew) |
+| קישורי תשלום | Paragraph | ✅ Yes | Payment URLs (one per line) |
+| לוגו אמצעי התשלום | Text | ❌ No | Payment method logo URL |
+| להוסיף אמצעי תשלום נוסף? | Radio | ✅ Yes | Add another payment method? |
+
+**Additional Gifts (Optional, numbered 2-N):**
+
+| Field Name | Type | Required | Description |
+|------------|------|----------|-------------|
+| מתנה X - שם (אנגלית) | Text | ❌ No | Gift X name (English) |
+| מתנה X - שם (עברית) | Text | ❌ No | Gift X name (Hebrew) |
+| מתנה X - קישורים | Paragraph | ❌ No | Gift X URLs (one per line) |
+| מתנה X - לוגו | Text | ❌ No | Gift X logo URL |
+| להוסיף אמצעי תשלום נוסף? | Radio | ✅ Yes | Add another? (except on last gift) |
+
+**Key Improvements:**
+- ✅ Each gift is in its own section with page breaks for better UX
+- ✅ URLs combined into single paragraph field (one URL per line)
+- ✅ "Add another?" navigation questions between sections
+- ✅ Cleaner, more streamlined field names
 
 ## Troubleshooting
 

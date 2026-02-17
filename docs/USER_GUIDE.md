@@ -133,10 +133,14 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 ### Gift Options
 
-You can add multiple gift payment methods. Most forms support 5-10 different gift options. Each gift needs:
+The form is organized into sections with page breaks for easier navigation. You can add multiple gift payment methods. Most forms support 3-10 different gift options.
 
-#### מתנה X - שם (אנגלית) (Gift X Name - English)
-*חובה (Required for each gift)* - The payment method name in English
+**Note:** The first gift uses simplified field names, while additional gifts are numbered.
+
+#### First Gift Fields:
+
+**שם אמצעי התשלום (אנגלית)** (Payment Method Name - English)
+*חובה (Required)* - The payment method name in English
 
 **Examples:**
 - "Bit"
@@ -146,7 +150,7 @@ You can add multiple gift payment methods. Most forms support 5-10 different gif
 - "Cash App"
 - "Bank Transfer"
 
-#### מתנה X - שם (עברית) (Gift X Name - Hebrew)
+**שם אמצעי התשלום (עברית)** (Payment Method Name - Hebrew)
 *אופציונלי (Optional)* - Hebrew name for the payment method
 
 **Examples:**
@@ -154,25 +158,25 @@ You can add multiple gift payment methods. Most forms support 5-10 different gif
 - "פייבוקס" (PayBox)
 - "העברה בנקאית" (Bank Transfer)
 
-#### מתנה X - קישור 1 (Gift X - Link 1)
-*חובה (Required for each gift)* - The payment link
+**קישורי תשלום** (Payment Links)
+*חובה (Required)* - One or more payment links (one per line)
 
+- Add each payment link on a separate line (press Enter after each URL)
 - This is where guests will be sent when they click the gift
 - **Examples:**
-  - Bit link: `https://bit.co.il/app/?pageName=amountSelection&uid=xxx`
-  - PayBox link: `https://payboxapp.page.link/xxx`
-  - Venmo: `https://venmo.com/yourusername`
-  - Custom page with bank details: `https://yourwebsite.com/bank-info`
+  ```
+  https://bit.co.il/app/?pageName=amountSelection&uid=xxx
+  https://payboxapp.page.link/xxx
+  ```
+  
+  Or for a single link:
+  ```
+  https://venmo.com/yourusername
+  ```
 
 **Important:** Test your links before submitting! Click them to make sure they work.
 
-#### מתנה X - קישור 2 (Gift X - Link 2)
-*אופציונלי (Optional)* - Alternative payment link
-
-- Use this if you have a second option for the same gift method
-- Example: Bit has two different links for different accounts
-
-#### מתנה X - לוגו (Gift X - Logo)
+**לוגו אמצעי התשלום** (Payment Method Logo)
 *אופציונלי (Optional)* - Link to the payment method's logo
 
 - A small image that represents the payment method
@@ -185,6 +189,24 @@ You can add multiple gift payment methods. Most forms support 5-10 different gif
   - Test the URL in your browser first
 
 **If you skip this:** The gift will show without a logo (text only)
+
+**להוסיף אמצעי תשלום נוסף?** (Add Another Payment Method?)
+*חובה (Required)* - Choose whether to add more payment options
+
+- Select "כן / Yes" to add another payment method
+- Select "לא - סיימתי / No - I'm done" to finish
+
+---
+
+#### Additional Gift Fields (מתנה 2, מתנה 3, etc.):
+
+For gifts 2 and beyond, the field names include numbers:
+
+- **מתנה X - שם (אנגלית)** - Payment method name in English (optional)
+- **מתנה X - שם (עברית)** - Payment method name in Hebrew (optional)
+- **מתנה X - קישורים** - Payment links, one per line (optional)
+- **מתנה X - לוגו** - Logo URL (optional)
+- **להוסיף אמצעי תשלום נוסף?** - Add another? (required if not last gift)
 
 ### Recommended Number of Gifts
 

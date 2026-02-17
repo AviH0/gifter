@@ -181,25 +181,36 @@ function buildConfigFromResponses(responses, uuid) {
   
   // Build gifts array (support up to 10 gifts)
   for (let i = 1; i <= 10; i++) {
-    const nameEnKey = 'מתנה ' + i + ' - שם (אנגלית)';
-    const nameHeKey = 'מתנה ' + i + ' - שם (עברית)';
-    const url1Key = 'מתנה ' + i + ' - קישור 1';
-    const url2Key = 'מתנה ' + i + ' - קישור 2';
-    const logoKey = 'מתנה ' + i + ' - לוגו';
+    // Field names change after first gift
+    let nameEnKey, nameHeKey, urlKey, logoKey;
     
-    // Check if this gift exists
+    if (i === 1) {
+      nameEnKey = 'שם אמצעי התשלום (אנגלית)';
+      nameHeKey = 'שם אמצעי התשלום (עברית)';
+      urlKey = 'קישורי תשלום';
+      logoKey = 'לוגו אמצעי התשלום';
+    } else {
+      nameEnKey = 'מתנה ' + i + ' - שם (אנגלית)';
+      nameHeKey = 'מתנה ' + i + ' - שם (עברית)';
+      urlKey = 'מתנה ' + i + ' - קישורים';
+      logoKey = 'מתנה ' + i + ' - לוגו';
+    }
+    
+    // Check if this gift exists (must have a name)
     if (responses[nameEnKey] && responses[nameEnKey][0]) {
       const gift = {
         name: {
           en: responses[nameEnKey][0],
           he: responses[nameHeKey] && responses[nameHeKey][0] ? responses[nameHeKey][0] : responses[nameEnKey][0]
         },
-        url: [responses[url1Key][0]]
+        url: []
       };
       
-      // Add second URL if provided
-      if (responses[url2Key] && responses[url2Key][0]) {
-        gift.url.push(responses[url2Key][0]);
+      // Parse URLs (one per line)
+      if (responses[urlKey] && responses[urlKey][0]) {
+        const urlText = responses[urlKey][0];
+        const urls = urlText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+        gift.url = urls;
       }
       
       // Add logo if provided
@@ -207,7 +218,10 @@ function buildConfigFromResponses(responses, uuid) {
         gift.logo = responses[logoKey][0];
       }
       
-      config.gifts.push(gift);
+      // Only add gift if it has at least one URL
+      if (gift.url.length > 0) {
+        config.gifts.push(gift);
+      }
     }
   }
   

@@ -326,17 +326,51 @@ function buildFormStructure(config) {
   // cannot be created via the API and must be added manually.
   // See post-creation instructions for details.
 
-  // 9-N. Gift fields (repeated for each gift)
+  // Section: Gift Options
+  // Add a page break before gifts section
+  requests.push({
+    createItem: {
+      item: {
+        title: 'אפשרויות מתנות (Gift Options)',
+        description: 'הוסיפו לפחות אמצעי תשלום אחד. תוכלו להוסיף עד ' + config.numGifts + ' אמצעי תשלום שונים.\n\nAdd at least one payment method. You can add up to ' + config.numGifts + ' different payment options.',
+        pageBreakItem: {}
+      },
+      location: {
+        index: currentIndex++
+      }
+    }
+  });
+
+  // Gift fields (streamlined with sections)
   for (let i = 1; i <= config.numGifts; i++) {
-    // Gift Name (English)
+    const isFirst = i === 1;
+    const isLast = i === config.numGifts;
+    
+    // Section header for each gift (except first which has page break above)
+    if (i > 1) {
+      requests.push({
+        createItem: {
+          item: {
+            title: `מתנה ${i} (Gift ${i})`,
+            description: `אפשרות תשלום נוספת (אופציונלי)\n\nAdditional payment option (optional)`,
+            pageBreakItem: {}
+          },
+          location: {
+            index: currentIndex++
+          }
+        }
+      });
+    }
+
+    // Gift Name (English) - required only for first gift
     requests.push({
       createItem: {
         item: {
-          title: `מתנה ${i} - שם (אנגלית)`,
-          description: `שם אמצעי התשלום באנגלית (לדוגמה: 'Bit', 'PayBox', 'Venmo')${i === 1 ? ' - חובה' : ' - אופציונלי'}`,
+          title: isFirst ? 'שם אמצעי התשלום (אנגלית)' : `מתנה ${i} - שם (אנגלית)`,
+          description: `שם אמצעי התשלום באנגלית (לדוגמה: 'Bit', 'PayBox', 'Venmo', 'Cash App')${isFirst ? ' - חובה' : ' - אופציונלי'}`,
           questionItem: {
             question: {
-              required: i === 1,
+              required: isFirst,
               textQuestion: {
                 paragraph: false
               }
@@ -349,12 +383,12 @@ function buildFormStructure(config) {
       }
     });
 
-    // Gift Name (Hebrew)
+    // Gift Name (Hebrew) - always optional
     requests.push({
       createItem: {
         item: {
-          title: `מתנה ${i} - שם (עברית)`,
-          description: `שם אמצעי התשלום בעברית (לדוגמה: 'ביט', 'פייבוקס') - אופציונלי`,
+          title: isFirst ? 'שם אמצעי התשלום (עברית)' : `מתנה ${i} - שם (עברית)`,
+          description: `שם אמצעי התשלום בעברית (לדוגמה: 'ביט', 'פייבוקס', 'ונמו') - אופציונלי`,
           questionItem: {
             question: {
               required: false,
@@ -370,17 +404,17 @@ function buildFormStructure(config) {
       }
     });
 
-    // Gift URL 1 (required for first gift)
+    // Gift URLs (combined into one paragraph field) - required only for first gift
     requests.push({
       createItem: {
         item: {
-          title: `מתנה ${i} - קישור 1`,
-          description: `קישור לאמצעי התשלום (לדוגמה: https://bit.co.il/app/?uid=xxx)${i === 1 ? ' - חובה' : ' - אופציונלי'}`,
+          title: isFirst ? 'קישורי תשלום' : `מתנה ${i} - קישורים`,
+          description: `הוסיפו קישור אחד או יותר (קישור אחד בכל שורה)\n\nלדוגמה:\nhttps://bit.co.il/app/?uid=xxx\nhttps://payboxapp.page.link/xxx\n\nAdd one or more payment links (one per line)${isFirst ? ' - חובה' : ' - אופציונלי'}`,
           questionItem: {
             question: {
-              required: i === 1,
+              required: isFirst,
               textQuestion: {
-                paragraph: false
+                paragraph: true
               }
             }
           }
@@ -391,12 +425,12 @@ function buildFormStructure(config) {
       }
     });
 
-    // Gift URL 2 (optional)
+    // Gift Logo URL - always optional
     requests.push({
       createItem: {
         item: {
-          title: `מתנה ${i} - קישור 2`,
-          description: 'קישור נוסף (אופציונלי)',
+          title: isFirst ? 'לוגו אמצעי התשלום' : `מתנה ${i} - לוגו`,
+          description: 'קישור ללוגו (PNG/JPG/SVG) - אופציונלי\n\nלדוגמה: https://example.com/logo.png',
           questionItem: {
             question: {
               required: false,
@@ -412,26 +446,33 @@ function buildFormStructure(config) {
       }
     });
 
-    // Gift Logo URL
-    requests.push({
-      createItem: {
-        item: {
-          title: `מתנה ${i} - לוגו`,
-          description: 'קישור ללוגו של אמצעי התשלום (PNG/JPG/SVG) - אופציונלי',
-          questionItem: {
-            question: {
-              required: false,
-              textQuestion: {
-                paragraph: false
+    // "Add another gift?" question (for all but the last gift)
+    if (!isLast) {
+      requests.push({
+        createItem: {
+          item: {
+            title: 'להוסיף אמצעי תשלום נוסף?',
+            description: 'בחרו "כן" כדי להוסיף עוד אפשרות תשלום, או "לא" לסיים\n\nChoose "Yes" to add another payment option, or "No" to finish',
+            questionItem: {
+              question: {
+                required: true,
+                choiceQuestion: {
+                  type: 'RADIO',
+                  options: [
+                    { value: 'כן / Yes' },
+                    { value: 'לא - סיימתי / No - I\'m done' }
+                  ],
+                  shuffle: false
+                }
               }
             }
+          },
+          location: {
+            index: currentIndex++
           }
-        },
-        location: {
-          index: currentIndex++
         }
-      }
-    });
+      });
+    }
   }
 
   return { requests };

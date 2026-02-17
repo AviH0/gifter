@@ -241,30 +241,65 @@ Add these fields in order (exact Hebrew names are important for the script to wo
    - Optional (אופציונלי)
    - Description: "תמונת רקע למצב כהה (אופקית, עד 10MB)"
 
-**אפשרויות מתנה (Gift Options - repeat for Gifts 1-5, or more if needed):**
+**אפשרויות מתנה (Gift Options):**
 
-For each gift (example for Gift 1):
-9. **מתנה 1 - שם (אנגלית)** (Short answer)
-   - Description: "שם המתנה באנגלית (לדוגמה: 'Bit')"
+**IMPORTANT:** Use sections and page breaks to organize gift fields for better UX.
 
-10. **מתנה 1 - שם (עברית)** (Short answer)
+9. **Add Section/Page Break** (click "Add section" button)
+   - Title: "אפשרויות מתנות (Gift Options)"
+   - Description: "הוסיפו לפחות אמצעי תשלום אחד"
+
+**First Gift (Required - uses simplified field names):**
+
+10. **שם אמצעי התשלום (אנגלית)** (Short answer)
+    - Required (חובה)
+    - Description: "שם אמצעי התשלום באנגלית (לדוגמה: 'Bit', 'PayBox', 'Venmo')"
+
+11. **שם אמצעי התשלום (עברית)** (Short answer)
     - Optional (אופציונלי)
-    - Description: "שם המתנה בעברית (לדוגמה: 'ביט')"
+    - Description: "שם אמצעי התשלום בעברית (לדוגמה: 'ביט', 'פייבוקס')"
 
-11. **מתנה 1 - קישור 1** (Short answer)
-    - Description: "קישור התשלום הראשי"
+12. **קישורי תשלום** (Paragraph text)
+    - Required (חובה)
+    - Description: "הוסיפו קישור אחד או יותר (קישור אחד בכל שורה)\n\nלדוגמה:\nhttps://bit.co.il/app/?uid=xxx\nhttps://payboxapp.page.link/xxx"
 
-12. **מתנה 1 - קישור 2** (Short answer)
+13. **לוגו אמצעי התשלום** (Short answer)
     - Optional (אופציונלי)
-    - Description: "קישור תשלום אלטרנטיבי (אם יש)"
+    - Description: "קישור ללוגו (PNG/JPG/SVG) - לדוגמה: https://example.com/logo.png"
 
-13. **מתנה 1 - לוגו** (Short answer)
+14. **להוסיף אמצעי תשלום נוסף?** (Multiple choice)
+    - Required (חובה)
+    - Options:
+      - כן / Yes
+      - לא - סיימתי / No - I'm done
+    - Description: "בחרו 'כן' כדי להוסיף עוד אפשרות תשלום"
+
+**Additional Gifts 2-N (Optional - repeat with numbered field names):**
+
+15. **Add Section/Page Break**
+    - Title: "מתנה 2 (Gift 2)"
+    - Description: "אפשרות תשלום נוספת (אופציונלי)"
+
+16. **מתנה 2 - שם (אנגלית)** (Short answer)
     - Optional (אופציונלי)
-    - Description: "קישור לתמונת הלוגו של המתנה"
 
-**חזור על שדות 9-13 עבור מתנה 2, מתנה 3, וכו' (Repeat fields 9-13 for מתנה 2, מתנה 3, etc.)**
+17. **מתנה 2 - שם (עברית)** (Short answer)
+    - Optional (אופציונלי)
 
-Recommended: Support at least 5 gifts, but the script supports up to 10.
+18. **מתנה 2 - קישורים** (Paragraph text)
+    - Optional (אופציונלי)
+    - Description: "קישורים (אחד בכל שורה)"
+
+19. **מתנה 2 - לוגו** (Short answer)
+    - Optional (אופציונלי)
+
+20. **להוסיף אמצעי תשלום נוסף?** (Multiple choice)
+    - Required (חובה)
+    - Same options as before
+
+**Repeat sections 15-20 for מתנה 3, מתנה 4, מתנה 5, etc.**
+
+Recommended: Support at least 3-5 gifts. The script supports up to 10.
 
 **4.3. Configure Form Settings**
 
