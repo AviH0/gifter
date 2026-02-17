@@ -60,10 +60,22 @@ function onFormSubmit(e) {
       throw new Error('Event object is null or undefined. Make sure the trigger is set up correctly as "On form submit".');
     }
     
-    if (!e.namedValues) {
-      Logger.log('ERROR: e.namedValues is undefined');
+    // Get responses - either from namedValues or by extracting from response object
+    let responses;
+    
+    if (e.namedValues) {
+      // Standard case: namedValues is populated
+      responses = e.namedValues;
+      Logger.log('Using e.namedValues');
+    } else if (e.response) {
+      // Fallback: Extract namedValues from response object
+      Logger.log('e.namedValues not available, extracting from e.response');
+      responses = extractNamedValues(e.response);
+      Logger.log('Extracted responses from FormResponse object');
+    } else {
+      Logger.log('ERROR: Neither e.namedValues nor e.response is available');
       Logger.log('Available properties: ' + Object.keys(e).join(', '));
-      throw new Error('Event does not contain namedValues. This usually means:\n' +
+      throw new Error('Event does not contain form data. This usually means:\n' +
                       '1. The trigger is not set up as "On form submit"\n' +
                       '2. Or you are trying to test the function manually\n\n' +
                       'Please ensure the trigger is configured as:\n' +
@@ -71,7 +83,6 @@ function onFormSubmit(e) {
                       '- Event type: On form submit');
     }
     
-    const responses = e.namedValues;
     Logger.log('Response fields: ' + Object.keys(responses).join(', '));
     
     // Get email - try both Hebrew and English field names
@@ -133,11 +144,27 @@ function onFormSubmit(e) {
     // Try to notify user of error
     try {
       let email = null;
+      
+      // Try to get email from namedValues
       if (e && e.namedValues) {
         if (e.namedValues['אימייל'] && e.namedValues['אימייל'][0]) {
           email = e.namedValues['אימייל'][0];
         } else if (e.namedValues['Email'] && e.namedValues['Email'][0]) {
           email = e.namedValues['Email'][0];
+        }
+      }
+      
+      // Try to get email from response object if not found
+      if (!email && e && e.response) {
+        try {
+          const extractedValues = extractNamedValues(e.response);
+          if (extractedValues['אימייל'] && extractedValues['אימייל'][0]) {
+            email = extractedValues['אימייל'][0];
+          } else if (extractedValues['Email'] && extractedValues['Email'][0]) {
+            email = extractedValues['Email'][0];
+          }
+        } catch (extractError) {
+          Logger.log('Could not extract email from response: ' + extractError.toString());
         }
       }
       
@@ -157,6 +184,54 @@ function onFormSubmit(e) {
     
     throw error; // Re-throw to mark execution as failed
   }
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/**
+ * Extract namedValues from FormResponse object
+ * This is a fallback when e.namedValues is not populated
+ * @param {FormResponse} formResponse - The form response object
+ * @return {Object} Object with field names as keys and arrays of values
+ */
+function extractNamedValues(formResponse) {
+  const namedValues = {};
+  
+  try {
+    const itemResponses = formResponse.getItemResponses();
+    
+    for (const itemResponse of itemResponses) {
+      const title = itemResponse.getItem().getTitle();
+      const response = itemResponse.getResponse();
+      
+      // Store as array to match namedValues format
+      if (Array.isArray(response)) {
+        namedValues[title] = response;
+      } else {
+        namedValues[title] = [response];
+      }
+    }
+    
+    // Also try to get email from response if collected
+    try {
+      const email = formResponse.getRespondentEmail();
+      if (email) {
+        namedValues['Email'] = [email];
+      }
+    } catch (e) {
+      // Email might not be collected
+      Logger.log('Could not get respondent email: ' + e.toString());
+    }
+    
+    Logger.log('Extracted ' + Object.keys(namedValues).length + ' fields from FormResponse');
+  } catch (error) {
+    Logger.log('Error extracting namedValues: ' + error.toString());
+    throw new Error('Failed to extract form data from response object: ' + error.toString());
+  }
+  
+  return namedValues;
 }
 
 // ============================================================================
