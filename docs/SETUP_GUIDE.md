@@ -521,9 +521,23 @@ You should receive an email with:
 
 **Cause**: The form submission trigger is not configured correctly, or the event object isn't being passed properly to the script.
 
-**Solutions**:
+**UPDATE**: As of commit `d69073c`, this should be automatically fixed! The script now extracts data from `e.response` when `e.namedValues` is not available.
 
-1. **Verify trigger configuration** (MOST COMMON ISSUE):
+**If you still see this error after updating to the latest script:**
+
+1. **Update to the latest Apps Script template**:
+   - Copy the latest version from `scripts/templates/apps-script.js` in the repository
+   - The new version includes `extractNamedValues()` function
+   - Paste it into your Apps Script editor, replacing all code
+   - Save (Ctrl+S)
+
+2. **Submit test form again**:
+   - The updated script will automatically detect and use `e.response`
+   - Check execution logs - you should see "Extracting from e.response"
+   - Form submission should now succeed
+
+3. **If still failing, verify trigger configuration**:
+3. **If still failing, verify trigger configuration**:
    - In Apps Script editor, click the clock/alarm icon (⏰) on left sidebar
    - You should see one trigger with these exact settings:
      - **Function**: `onFormSubmit`
@@ -535,7 +549,8 @@ You should receive an email with:
      - Configure exactly as shown in [Step 7](#7-add-form-submit-trigger)
      - Click "Save" and re-authorize if prompted
 
-2. **Check field names match exactly**:
+4. **Check field names match exactly**:
+4. **Check field names match exactly**:
    - Run the debug helper function:
      - In Apps Script editor, select `debugFormFields` from function dropdown
      - Click "Run" (▶️ button)
@@ -547,21 +562,21 @@ You should receive an email with:
      - `שם אמצעי התשלום (אנגלית)` for first gift
      - `מתנה 2 - שם (אנגלית)` for subsequent gifts
 
-3. **Verify Apps Script is bound to the form**:
+5. **Verify Apps Script is bound to the form**:
+5. **Verify Apps Script is bound to the form**:
    - Apps Script must be opened from: Form → ⋮ (three dots) → "Script editor"
    - If you created script separately, it won't receive form events
    - Solution: Create new script from form's menu
 
-4. **Test with debug logging**:
+6. **Test with debug logging**:
    - The enhanced error handling logs detailed information
    - Submit form and check execution logs (clock icon → click execution)
    - Look for lines showing:
-     - "Event object type"
-     - "Event object keys"
+     - "Using e.namedValues" OR "Extracting from e.response"
      - "Response fields" (shows what fields were received)
    - This reveals exactly what's being passed to the script
 
-5. **Run diagnostic functions**:
+7. **Run diagnostic functions**:
    ```javascript
    // In Apps Script editor:
    
