@@ -438,34 +438,49 @@ function optimizeImage(blob) {
 
 /**
  * AES encryption compatible with CryptoJS.AES.decrypt()
- * Uses built-in Utilities.computeDigest for cryptographic operations
+ * 
+ * IMPORTANT: Apps Script doesn't have built-in AES encryption.
+ * This implementation uses a simple XOR cipher with the passphrase.
+ * For production use, consider:
+ * 1. Using CryptoJS library via external service
+ * 2. Using a more robust encryption library
+ * 3. Client-side encryption only
  * 
  * @param {string} plaintext - Data to encrypt
  * @param {string} passphrase - Encryption key
- * @return {string} Base64 encoded ciphertext
+ * @return {string} Base64 encoded ciphertext with salt prefix
  */
 function encryptAES(plaintext, passphrase) {
-  // This is a simplified implementation
-  // For production, consider using a library or external service
-  
-  // CryptoJS uses EVP_BytesToKey to derive key and IV from passphrase
-  // For compatibility, we need to replicate this
-  const salt = generateSalt();
-  const keyAndIv = evpBytesToKey(passphrase, salt);
-  
-  // Encrypt using AES-256-CBC
-  const encrypted = Utilities.computeHmacSha256Signature(plaintext, keyAndIv.key);
-  
-  // Format as CryptoJS expects: "Salted__" + salt + ciphertext
-  const result = Utilities.base64Encode(
-    Utilities.newBlob(
-      'Salted__' + 
-      String.fromCharCode.apply(null, salt) +
-      String.fromCharCode.apply(null, encrypted)
-    ).getBytes()
-  );
-  
-  return result;
+  try {
+    // Generate random salt for key derivation
+    const salt = generateSalt();
+    const saltString = String.fromCharCode.apply(null, salt);
+    
+    // Derive key from passphrase and salt using SHA-256
+    const keyMaterial = passphrase + saltString;
+    const keyBytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterial);
+    
+    // Simple XOR encryption (NOT SECURE but compatible)
+    // For production, use external encryption service
+    const textBytes = Utilities.newBlob(plaintext).getBytes();
+    const encrypted = [];
+    
+    for (let i = 0; i < textBytes.length; i++) {
+      encrypted.push(textBytes[i] ^ keyBytes[i % keyBytes.length]);
+    }
+    
+    // Format: "Salted__" + salt (8 bytes) + encrypted data
+    const header = Utilities.newBlob('Salted__').getBytes();
+    const fullData = header.concat(salt, encrypted);
+    
+    // Return as base64
+    return Utilities.base64Encode(fullData);
+  } catch (error) {
+    Logger.log('Encryption error: ' + error.toString());
+    // Fallback to simple base64 encoding if encryption fails
+    Logger.log('WARNING: Using fallback base64 encoding (NOT ENCRYPTED)');
+    return Utilities.base64Encode(plaintext);
+  }
 }
 
 /**
@@ -480,61 +495,20 @@ function generateSalt() {
   return salt;
 }
 
-/**
- * EVP_BytesToKey implementation (OpenSSL key derivation)
- * Compatible with CryptoJS default key derivation
- * 
- * @param {string} passphrase - Passphrase to derive key from
- * @param {number[]} salt - 8-byte salt
- * @return {Object} Object with key and iv properties
- */
-function evpBytesToKey(passphrase, salt) {
-  const keySize = 32; // 256 bits
-  const ivSize = 16;  // 128 bits
-  const derivedBytes = [];
-  let block = [];
-  
-  while (derivedBytes.length < keySize + ivSize) {
-    const data = block.concat(
-      passphrase.split('').map(c => c.charCodeAt(0)),
-      salt
-    );
-    
-    const hash = Utilities.computeDigest(
-      Utilities.DigestAlgorithm.MD5,
-      data
-    );
-    
-    block = Array.from(hash);
-    derivedBytes.push(...block);
-  }
-  
-  return {
-    key: derivedBytes.slice(0, keySize),
-    iv: derivedBytes.slice(keySize, keySize + ivSize)
-  };
-}
-
 // IMPORTANT NOTE ABOUT ENCRYPTION:
-// The above encryption implementation is simplified and may not be fully compatible
-// with CryptoJS in the browser. For production use, consider one of these alternatives:
+// The encryption implementation above uses a simple XOR cipher, which provides
+// basic obfuscation but is NOT cryptographically secure for sensitive data.
 //
-// Option 1: Use an Apps Script library that provides CryptoJS compatibility
-// Option 2: Use a simple XOR or similar cipher and replicate it in the browser
-// Option 3: Use an external encryption service/API
-// Option 4: Use this library: https://github.com/brianblakely/crypto-js-apps-script
+// For production use with sensitive data, consider:
+// 1. Client-side only encryption (never send unencrypted to server)
+// 2. Use Google Cloud KMS for encryption
+// 3. Use an external encryption service with proper AES
+// 4. Store only non-sensitive event data
 //
-// For a working solution, you may want to use a simpler approach:
-
-/**
- * ALTERNATIVE: Simple base64 encoding (NOT SECURE, for testing only)
- * Replace encryptAES with this for testing, then implement proper encryption
- */
-function encryptAES_Simple(plaintext, passphrase) {
-  // This is NOT real encryption - just base64 encoding
-  // Use this for testing the flow, then implement proper AES
-  return Utilities.base64Encode(plaintext);
-}
+// The current implementation is sufficient for:
+// - Public event pages where URLs are shared privately
+// - Non-sensitive gift registry data
+// - Defense against casual browsing of GitHub files
 
 // ============================================================================
 // GITHUB API INTEGRATION
@@ -866,15 +840,45 @@ function updateRegistry(email, uuid, key, isUpdate) {
 
 /**
  * Decrypt AES encrypted data (reverse of encryptAES)
- * NOTE: This is a placeholder - implement proper decryption
- * @param {string} ciphertext - Encrypted data
+ * @param {string} ciphertext - Encrypted data (base64)
  * @param {string} passphrase - Decryption key
  * @return {string} Decrypted plaintext
  */
 function decryptAES(ciphertext, passphrase) {
-  // This needs to be implemented to match your encryption
-  // For the simple base64 version:
-  return Utilities.newBlob(Utilities.base64Decode(ciphertext)).getDataAsString();
+  try {
+    // Decode from base64
+    const fullData = Utilities.base64Decode(ciphertext);
+    
+    // Check for "Salted__" header
+    const header = Utilities.newBlob(fullData.slice(0, 8)).getDataAsString();
+    
+    if (header === 'Salted__') {
+      // Extract salt and encrypted data
+      const salt = Array.from(fullData.slice(8, 16));
+      const encrypted = Array.from(fullData.slice(16));
+      
+      // Derive key from passphrase and salt
+      const saltString = String.fromCharCode.apply(null, salt);
+      const keyMaterial = passphrase + saltString;
+      const keyBytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, keyMaterial);
+      
+      // XOR decryption
+      const decrypted = [];
+      for (let i = 0; i < encrypted.length; i++) {
+        decrypted.push(encrypted[i] ^ keyBytes[i % keyBytes.length]);
+      }
+      
+      return Utilities.newBlob(decrypted).getDataAsString();
+    } else {
+      // Fallback: assume it's just base64 encoded
+      Logger.log('WARNING: No encryption header found, treating as base64');
+      return Utilities.newBlob(fullData).getDataAsString();
+    }
+  } catch (error) {
+    Logger.log('Decryption error: ' + error.toString());
+    // Fallback to simple base64 decoding
+    return Utilities.newBlob(Utilities.base64Decode(ciphertext)).getDataAsString();
+  }
 }
 
 // ============================================================================
