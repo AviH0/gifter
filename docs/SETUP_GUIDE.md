@@ -143,66 +143,66 @@ The form is the interface where event creators will submit their event details.
 
 **4.2. Add Form Fields**
 
-Add these fields in order (exact names are important for the script to work):
+Add these fields in order (exact Hebrew names are important for the script to work):
 
-**Basic Information:**
-1. **Email** (Email field)
-   - Make it required
-   - Description: "Your email address (used for updates)"
+**מידע בסיסי (Basic Information):**
+1. **אימייל** (Email field)
+   - Required (חובה)
+   - Description: "כתובת האימייל שלך (לעדכונים)"
 
-**Event Details:**
-2. **Event Title (EN)** (Short answer)
-   - Required
-   - Description: "Event title in English (e.g., 'Sarah & John's Wedding')"
+**פרטי האירוע (Event Details):**
+2. **כותרת האירוע (אנגלית)** (Short answer)
+   - Required (חובה)
+   - Description: "כותרת האירוע באנגלית (לדוגמה: 'Sarah & John's Wedding')"
 
-3. **Event Title (HE)** (Short answer)
-   - Optional
-   - Description: "Event title in Hebrew (leave blank if not needed)"
+3. **כותרת האירוע (עברית)** (Short answer)
+   - Optional (אופציונלי)
+   - Description: "כותרת האירוע בעברית (לדוגמה: 'החתונה של שרה וג'ון')"
 
-4. **Message (EN)** (Short answer)
-   - Required
-   - Description: "Message to guests in English (e.g., 'Send us a gift!')"
+4. **הודעה לאורחים (אנגלית)** (Short answer)
+   - Required (חובה)
+   - Description: "הודעה לאורחים באנגלית (לדוגמה: 'Send us a gift!')"
 
-5. **Message (HE)** (Short answer)
-   - Optional
-   - Description: "Message to guests in Hebrew"
+5. **הודעה לאורחים (עברית)** (Short answer)
+   - Optional (אופציונלי)
+   - Description: "הודעה לאורחים בעברית (לדוגמה: 'שלחו לנו מתנה!')"
 
-**Images (all optional):**
-6. **Wedding Image** (File upload)
-   - Optional
-   - Description: "Main event photo (recommended: 800x600px, max 10MB)"
+**תמונות (Images - all optional):**
+6. **תמונת האירוע** (File upload)
+   - Optional (אופציונלי)
+   - Description: "תמונה ראשית של האירוע (מומלץ: 800x600px, עד 10MB)"
    - Settings: Allow only image files
 
-7. **Background Light** (File upload)
-   - Optional
-   - Description: "Background for light theme (landscape, max 10MB)"
+7. **רקע בהיר** (File upload)
+   - Optional (אופציונלי)
+   - Description: "תמונת רקע למצב בהיר (אופקית, עד 10MB)"
 
-8. **Background Dark** (File upload)
-   - Optional
-   - Description: "Background for dark theme (landscape, max 10MB)"
+8. **רקע כהה** (File upload)
+   - Optional (אופציונלי)
+   - Description: "תמונת רקע למצב כהה (אופקית, עד 10MB)"
 
-**Gift Options (repeat for Gifts 1-5, or more if needed):**
+**אפשרויות מתנה (Gift Options - repeat for Gifts 1-5, or more if needed):**
 
 For each gift (example for Gift 1):
-9. **Gift 1 Name (EN)** (Short answer)
-   - Description: "Gift name in English (e.g., 'Bit')"
+9. **מתנה 1 - שם (אנגלית)** (Short answer)
+   - Description: "שם המתנה באנגלית (לדוגמה: 'Bit')"
 
-10. **Gift 1 Name (HE)** (Short answer)
-    - Optional
-    - Description: "Gift name in Hebrew"
+10. **מתנה 1 - שם (עברית)** (Short answer)
+    - Optional (אופציונלי)
+    - Description: "שם המתנה בעברית (לדוגמה: 'ביט')"
 
-11. **Gift 1 URL 1** (Short answer)
-    - Description: "Primary payment link"
+11. **מתנה 1 - קישור 1** (Short answer)
+    - Description: "קישור התשלום הראשי"
 
-12. **Gift 1 URL 2** (Short answer)
-    - Optional
-    - Description: "Alternative payment link (optional)"
+12. **מתנה 1 - קישור 2** (Short answer)
+    - Optional (אופציונלי)
+    - Description: "קישור תשלום אלטרנטיבי (אם יש)"
 
-13. **Gift 1 Logo URL** (Short answer)
-    - Optional
-    - Description: "URL to gift logo image (e.g., company logo)"
+13. **מתנה 1 - לוגו** (Short answer)
+    - Optional (אופציונלי)
+    - Description: "קישור לתמונת הלוגו של המתנה"
 
-**Repeat fields 9-13 for Gift 2, Gift 3, etc.**
+**חזור על שדות 9-13 עבור מתנה 2, מתנה 3, וכו' (Repeat fields 9-13 for מתנה 2, מתנה 3, etc.)**
 
 Recommended: Support at least 5 gifts, but the script supports up to 10.
 

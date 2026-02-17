@@ -5,21 +5,21 @@
  * 
  * SETUP INSTRUCTIONS:
  * 
- * 1. Create a Google Form with these fields:
- *    - Email (email field)
- *    - Event Title (EN) (short text)
- *    - Event Title (HE) (short text)
- *    - Message (EN) (short text)
- *    - Message (HE) (short text)
- *    - Wedding Image (file upload - optional)
- *    - Background Light (file upload - optional)
- *    - Background Dark (file upload - optional)
- *    - Gift 1 Name (EN) (short text)
- *    - Gift 1 Name (HE) (short text)
- *    - Gift 1 URL 1 (short text)
- *    - Gift 1 URL 2 (short text - optional)
- *    - Gift 1 Logo URL (short text)
- *    [Repeat Gift fields for Gift 2, Gift 3, etc.]
+ * 1. Create a Google Form with these Hebrew fields:
+ *    - אימייל (email field)
+ *    - כותרת האירוע (אנגלית) (short text)
+ *    - כותרת האירוע (עברית) (short text)
+ *    - הודעה לאורחים (אנגלית) (short text)
+ *    - הודעה לאורחים (עברית) (short text)
+ *    - תמונת האירוע (file upload - optional)
+ *    - רקע בהיר (file upload - optional)
+ *    - רקע כהה (file upload - optional)
+ *    - מתנה 1 - שם (אנגלית) (short text)
+ *    - מתנה 1 - שם (עברית) (short text)
+ *    - מתנה 1 - קישור 1 (short text)
+ *    - מתנה 1 - קישור 2 (short text - optional)
+ *    - מתנה 1 - לוגו (short text)
+ *    [Repeat Gift fields for מתנה 2, מתנה 3, etc.]
  * 
  * 2. In Apps Script (Extensions > Apps Script), set Script Properties:
  *    - GITHUB_TOKEN: Personal Access Token with 'repo' scope
@@ -54,7 +54,7 @@ function onFormSubmit(e) {
     Logger.log('Form submission started');
     
     const responses = e.namedValues;
-    const email = responses['Email'][0].trim().toLowerCase();
+    const email = responses['אימייל'][0].trim().toLowerCase();
     
     Logger.log('Email: ' + email);
     
@@ -165,12 +165,12 @@ function buildConfigFromResponses(responses, uuid) {
       secondary: "'Rubik', sans-serif"
     },
     title: {
-      en: responses['Event Title (EN)'] ? responses['Event Title (EN)'][0] : 'Our Event',
-      he: responses['Event Title (HE)'] ? responses['Event Title (HE)'][0] : 'האירוע שלנו'
+      en: responses['כותרת האירוע (אנגלית)'] ? responses['כותרת האירוע (אנגלית)'][0] : 'Our Event',
+      he: responses['כותרת האירוע (עברית)'] ? responses['כותרת האירוע (עברית)'][0] : 'האירוע שלנו'
     },
     message: {
-      en: responses['Message (EN)'] ? responses['Message (EN)'][0] : 'Send us a gift!',
-      he: responses['Message (HE)'] ? responses['Message (HE)'][0] : 'שלחו לנו מתנה!'
+      en: responses['הודעה לאורחים (אנגלית)'] ? responses['הודעה לאורחים (אנגלית)'][0] : 'Send us a gift!',
+      he: responses['הודעה לאורחים (עברית)'] ? responses['הודעה לאורחים (עברית)'][0] : 'שלחו לנו מתנה!'
     },
     // Default images - will be updated if files uploaded
     image: 'assets/wedding.png',
@@ -181,11 +181,11 @@ function buildConfigFromResponses(responses, uuid) {
   
   // Build gifts array (support up to 10 gifts)
   for (let i = 1; i <= 10; i++) {
-    const nameEnKey = 'Gift ' + i + ' Name (EN)';
-    const nameHeKey = 'Gift ' + i + ' Name (HE)';
-    const url1Key = 'Gift ' + i + ' URL 1';
-    const url2Key = 'Gift ' + i + ' URL 2';
-    const logoKey = 'Gift ' + i + ' Logo URL';
+    const nameEnKey = 'מתנה ' + i + ' - שם (אנגלית)';
+    const nameHeKey = 'מתנה ' + i + ' - שם (עברית)';
+    const url1Key = 'מתנה ' + i + ' - קישור 1';
+    const url2Key = 'מתנה ' + i + ' - קישור 2';
+    const logoKey = 'מתנה ' + i + ' - לוגו';
     
     // Check if this gift exists
     if (responses[nameEnKey] && responses[nameEnKey][0]) {
@@ -243,13 +243,13 @@ function processImages(formResponse, uuid) {
         let fileId = null;
         let imageKey = null;
         
-        if (title.includes('Wedding Image')) {
+        if (title.includes('תמונת האירוע')) {
           fileId = response[0];
           imageKey = 'wedding';
-        } else if (title.includes('Background Light')) {
+        } else if (title.includes('רקע בהיר')) {
           fileId = response[0];
           imageKey = 'bgLight';
-        } else if (title.includes('Background Dark')) {
+        } else if (title.includes('רקע כהה')) {
           fileId = response[0];
           imageKey = 'bgDark';
         }

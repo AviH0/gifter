@@ -42,8 +42,8 @@ This platform lets you create a beautiful, personalized webpage where your weddi
 
 You'll receive a Google Form link from your event platform administrator. Here's what each field means:
 
-### Email Address
-**Required** - Your email address
+### אימייל (Email Address)
+**חובה (Required)** - Your email address
 
 - We use this to send you your event link
 - If you update your event later, use the **same email** to keep your link
@@ -51,8 +51,8 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 **Example:** `sarah.john@gmail.com`
 
-### Event Title (English)
-**Required** - Your event name in English
+### כותרת האירוע (אנגלית) - Event Title (English)
+**חובה (Required)** - Your event name in English
 
 - Keep it short and clear
 - This appears as the main heading on your page
@@ -63,16 +63,16 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 **Example:** `Sarah & John's Wedding`
 
-### Event Title (Hebrew)
-*Optional* - Your event name in Hebrew
+### כותרת האירוע (עברית) - Event Title (Hebrew)
+*אופציונלי (Optional)* - Your event name in Hebrew
 
 - Only fill this if you want Hebrew support
 - If left blank, English title will show for Hebrew visitors too
 
 **Example:** `החתונה של שרה וג'ון`
 
-### Message (English)
-**Required** - Your message to guests in English
+### הודעה לאורחים (אנגלית) - Message (English)
+**חובה (Required)** - Your message to guests in English
 
 - This appears below the title
 - Keep it warm and friendly
@@ -83,16 +83,16 @@ You'll receive a Google Form link from your event platform administrator. Here's
 - "Your presence is the greatest gift, but if you wish to contribute..."
 - "Help us celebrate with a gift!"
 
-### Message (Hebrew)
-*Optional* - Your message in Hebrew
+### הודעה לאורחים (עברית) - Message (Hebrew)
+*אופציונלי (Optional)* - Your message in Hebrew
 
 - Only needed if you want Hebrew support
 - If left blank, English message will show for Hebrew visitors
 
 **Example:** `שלחו לנו מתנה כדי לעזור לנו להתחיל את החיים החדשים שלנו!`
 
-### Wedding Image
-*Optional* - Your main event photo
+### תמונת האירוע (Wedding Image)
+*אופציונלי (Optional)* - Your main event photo
 
 - **Recommended size:** 800x600 pixels (landscape)
 - **File types:** JPG, PNG
@@ -105,8 +105,8 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 **If you skip this:** A default image will be used
 
-### Background Light
-*Optional* - Background image for light theme
+### רקע בהיר (Background Light)
+*אופציונלי (Optional)* - Background image for light theme
 
 - **Recommended:** Soft, light-colored landscape photo
 - **File types:** JPG, PNG
@@ -118,8 +118,8 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 **If you skip this:** A default background will be used
 
-### Background Dark
-*Optional* - Background image for dark theme
+### רקע כהה (Background Dark)
+*אופציונלי (Optional)* - Background image for dark theme
 
 - **Recommended:** Darker landscape photo
 - **File types:** JPG, PNG
@@ -135,8 +135,8 @@ You'll receive a Google Form link from your event platform administrator. Here's
 
 You can add multiple gift payment methods. Most forms support 5-10 different gift options. Each gift needs:
 
-#### Gift Name (English)
-*Required for each gift* - The payment method name
+#### מתנה X - שם (אנגלית) (Gift X Name - English)
+*חובה (Required for each gift)* - The payment method name in English
 
 **Examples:**
 - "Bit"
@@ -146,16 +146,16 @@ You can add multiple gift payment methods. Most forms support 5-10 different gif
 - "Cash App"
 - "Bank Transfer"
 
-#### Gift Name (Hebrew)
-*Optional* - Hebrew name for the payment method
+#### מתנה X - שם (עברית) (Gift X Name - Hebrew)
+*אופציונלי (Optional)* - Hebrew name for the payment method
 
 **Examples:**
 - "ביט" (Bit)
 - "פייבוקס" (PayBox)
 - "העברה בנקאית" (Bank Transfer)
 
-#### Gift URL 1
-*Required for each gift* - The payment link
+#### מתנה X - קישור 1 (Gift X - Link 1)
+*חובה (Required for each gift)* - The payment link
 
 - This is where guests will be sent when they click the gift
 - **Examples:**
@@ -166,14 +166,14 @@ You can add multiple gift payment methods. Most forms support 5-10 different gif
 
 **Important:** Test your links before submitting! Click them to make sure they work.
 
-#### Gift URL 2
-*Optional* - Alternative payment link
+#### מתנה X - קישור 2 (Gift X - Link 2)
+*אופציונלי (Optional)* - Alternative payment link
 
 - Use this if you have a second option for the same gift method
 - Example: Bit has two different links for different accounts
 
-#### Gift Logo URL
-*Optional* - Link to the payment method's logo
+#### מתנה X - לוגו (Gift X - Logo)
+*אופציונלי (Optional)* - Link to the payment method's logo
 
 - A small image that represents the payment method
 - **Examples:**
