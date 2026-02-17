@@ -30,3 +30,9 @@ github-token.txt
 scripts/credentials.json
 scripts/token.json
 scripts/form-info.json
+
+# Windows Zone.Identifier files
+*:Zone.Identifier
+
+# Local test events
+events/
