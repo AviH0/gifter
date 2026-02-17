@@ -506,29 +506,8 @@ async function createForm(auth, config) {
 
   console.log(`✅ Added all form fields (${formStructure.requests.length} items)`);
 
-  // Step 4: Publish the form
-  console.log('\n🌐 Publishing form...');
-  
-  await forms.forms.batchUpdate({
-    formId: formId,
-    requestBody: {
-      requests: [
-        {
-          updateSettings: {
-            settings: {
-              publishSettings: {
-                isPublished: true,
-                isAcceptingResponses: true
-              }
-            },
-            updateMask: 'publishSettings.isPublished,publishSettings.isAcceptingResponses'
-          }
-        }
-      ]
-    }
-  });
-
-  console.log('✅ Form published and accepting responses');
+  // Note: Forms created via API are automatically published and accepting responses
+  console.log('✅ Form is ready and accepting responses');
 
   return {
     formId,
