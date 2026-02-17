@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+scripts/node_modules/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Test outputs
+scripts/test-output/
+public/events/test-*/
+
+# Logs
+*.log
+
+# Secrets
+secrets.json
+github-token.txt
