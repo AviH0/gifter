@@ -110,21 +110,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     
+    // Get event details for image decryption
+    const eventId = new URLSearchParams(window.location.search).get('event');
+    const key = window.location.hash.substring(1);
+    
+    // Extract repo info
+    const hostname = window.location.hostname;
+    const pathname = window.location.pathname;
+    let githubUser, repoName, branch;
+    
+    if (hostname.endsWith('.github.io')) {
+        githubUser = hostname.split('.')[0];
+        const pathParts = pathname.split('/').filter(p => p);
+        repoName = pathParts[0] || 'wedding_gifts';
+        branch = 'multi-event-encrypted';
+    } else {
+        githubUser = 'YOUR_USERNAME';
+        repoName = 'wedding_gifts';
+        branch = 'multi-event-encrypted';
+    }
+    const repo = `${githubUser}/${repoName}`;
+    
     // Update base href if repoName differs from default
     if (config.repoName && config.repoName !== 'gifter') {
         document.querySelector('base').href = `/${config.repoName}/`;
     }
 
-    // Set background
-    const updateBackground = () => {
+    // Set background (with decryption if needed)
+    const updateBackground = async () => {
         const isDark = document.body.classList.contains('dark');
-        const bgImage = isDark ? config.backgroundDark : config.backgroundLight;
-        if (bgImage) {
-            document.body.style.backgroundImage = `url(${bgImage})`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
-            document.body.style.backgroundRepeat = 'no-repeat';
-            document.body.style.backgroundAttachment = 'fixed';
+        const bgImagePath = isDark ? config.backgroundDark : config.backgroundLight;
+        
+        if (bgImagePath) {
+            let bgUrl;
+            // Check if image is encrypted (.enc extension)
+            if (bgImagePath.endsWith('.enc') && eventId && key) {
+                console.log('Loading encrypted background:', bgImagePath);
+                bgUrl = await loadEncryptedImage(bgImagePath, key, repo, branch);
+            } else {
+                bgUrl = bgImagePath;
+            }
+            
+            if (bgUrl) {
+                document.body.style.backgroundImage = `url(${bgUrl})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundRepeat = 'no-repeat';
+                document.body.style.backgroundAttachment = 'fixed';
+            }
         }
     };
 
@@ -138,7 +171,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.documentElement.style.setProperty('--font-secondary', config.fonts.secondary);
     }
 
-    updateBackground();
+    await updateBackground();
 
     // Set title
     document.getElementById('title').textContent = config.title[lang];
@@ -146,8 +179,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Set message
     document.getElementById('message').textContent = config.message[lang];
 
-    // Set image
-    document.getElementById('wedding-img').src = config.image;
+    // Set image (with decryption if needed)
+    const weddingImg = document.getElementById('wedding-img');
+    if (config.image.endsWith('.enc') && eventId && key) {
+        console.log('Loading encrypted wedding image:', config.image);
+        const imageUrl = await loadEncryptedImage(config.image, key, repo, branch);
+        if (imageUrl) {
+            weddingImg.src = imageUrl;
+        } else {
+            weddingImg.style.display = 'none'; // Hide if can't load
+        }
+    } else {
+        weddingImg.src = config.image;
+    }
 
     // Populate gifts
     const giftsContainer = document.getElementById('gifts');
@@ -256,14 +300,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Theme toggle
     const themeToggle = document.getElementById('theme-toggle');
     themeToggle.textContent = savedTheme === 'light' ? 'Dark Mode' : 'Light Mode';
-    themeToggle.onclick = () => {
+    themeToggle.onclick = async () => {
         const currentTheme = document.body.classList.contains('light') ? 'light' : 'dark';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.body.classList.remove(currentTheme);
         document.body.classList.add(newTheme);
         localStorage.setItem('theme', newTheme);
         themeToggle.textContent = newTheme === 'light' ? 'Dark Mode' : 'Light Mode';
-        updateBackground();
+        await updateBackground();
     };
 
     // Language toggle
