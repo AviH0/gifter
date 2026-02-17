@@ -12,16 +12,55 @@ async function loadConfig() {
     
     if (eventId && key) {
         try {
-            // TODO: Update USERNAME/REPO to match your GitHub repository
-            const baseUrl = 'https://cdn.jsdelivr.net/gh/USERNAME/REPO@main';
-            const configUrl = `${baseUrl}/events/${eventId}/config.enc`;
+            // Extract repo info from GitHub Pages URL
+            // Format: https://username.github.io/repo-name/
+            const hostname = window.location.hostname;
+            const pathname = window.location.pathname;
             
-            const response = await fetch(configUrl);
+            let githubUser, repoName, branch;
+            
+            if (hostname.endsWith('.github.io')) {
+                // GitHub Pages URL
+                githubUser = hostname.split('.')[0];
+                const pathParts = pathname.split('/').filter(p => p);
+                repoName = pathParts[0] || 'wedding_gifts';
+                branch = 'multi-event-encrypted'; // Default branch for this platform
+            } else {
+                // Custom domain or local - use defaults
+                githubUser = 'YOUR_USERNAME'; // Fallback
+                repoName = 'wedding_gifts';
+                branch = 'multi-event-encrypted';
+            }
+            
+            const repo = `${githubUser}/${repoName}`;
+            
+            // Try jsDelivr CDN first (faster)
+            const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/events/${eventId}/config.enc`;
+            
+            console.log(`Loading event from: ${cdnUrl}`);
+            
+            let response = await fetch(cdnUrl);
+            
+            // Fallback to GitHub raw if CDN fails
+            if (!response.ok) {
+                console.log('CDN failed, trying GitHub raw...');
+                const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/public/events/${eventId}/config.enc`;
+                response = await fetch(rawUrl);
+            }
+            
             if (!response.ok) throw new Error('Config not found');
             
             const encrypted = await response.text();
-            const decrypted = CryptoJS.AES.decrypt(encrypted, key);
-            const configStr = decrypted.toString(CryptoJS.enc.Utf8);
+            
+            // Use new XOR decryption (from decrypt.js)
+            let configStr;
+            if (typeof decryptConfig === 'function') {
+                configStr = await decryptConfig(encrypted, key);
+            } else {
+                // Fallback to CryptoJS if decrypt.js not loaded
+                const decrypted = CryptoJS.AES.decrypt(encrypted, key);
+                configStr = decrypted.toString(CryptoJS.enc.Utf8);
+            }
             
             if (!configStr) throw new Error('Invalid encryption key');
             
@@ -35,7 +74,7 @@ async function loadConfig() {
             return config;
         } catch (err) {
             console.error('Failed to load event:', err);
-            alert(`Unable to load event: ${err.message}`);
+            alert(`Unable to load event: ${err.message}\n\nCheck console for details.`);
             return null;
         }
     }
