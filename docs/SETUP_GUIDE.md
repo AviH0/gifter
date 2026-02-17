@@ -71,9 +71,14 @@ Before you begin, you'll need:
 Your repository should have this structure:
 ```
 wedding_gifts/
-├── public/              # Frontend files served by GitHub Pages
-├── scripts/             # Setup scripts and templates
-├── docs/                # Documentation
+├── index.html               # Frontend files served by GitHub Pages
+├── en/                      # English version
+├── js/                      # JavaScript files
+├── css/                     # Stylesheets
+├── assets/                  # Images and static assets
+├── events/                  # Encrypted event data
+├── scripts/                 # Setup scripts and templates
+├── docs/                    # Documentation
 └── README.md
 ```
 
@@ -111,7 +116,7 @@ The Apps Script needs permission to commit encrypted event data to your reposito
 1. In your repository, go to Settings → Pages (left sidebar)
 2. Under "Source", select:
    - **Branch**: `multi-event-encrypted`
-   - **Folder**: `/public`
+   - **Folder**: `/ (root)`
 3. Click "Save"
 4. Wait 1-2 minutes for deployment
 
@@ -417,6 +422,7 @@ You should receive an email with:
    - **GitHub repo not found**: Check GITHUB_REPO format is `username/repo`
    - **Branch not found**: Ensure branch name is exact (`multi-event-encrypted`)
    - **Permission denied**: Token might have expired or insufficient permissions
+   - **Path not found**: Ensure events/ directory exists in root (not public/)
 
 #### Form Submits But No Email or GitHub Commit
 
@@ -437,9 +443,9 @@ You should receive an email with:
 **Solutions**:
 1. **Wait 1-2 minutes** - jsDelivr CDN needs time to cache new files
 2. Verify the full URL was copied (including `#` and key after it)
-3. Check GitHub to confirm `public/events/[uuid]/config.enc` exists
+3. Check GitHub to confirm `events/[uuid]/config.enc` exists in root directory
 4. Try purging CDN cache:
-   - Visit: `https://purge.jsdelivr.net/gh/[username]/wedding_gifts@multi-event-encrypted/public/events/[uuid]/config.enc`
+   - Visit: `https://purge.jsdelivr.net/gh/[username]/wedding_gifts@multi-event-encrypted/events/[uuid]/config.enc`
 5. Hard refresh browser: Ctrl+Shift+R (or Cmd+Shift+R on Mac)
 
 #### Event Page Shows Blank or Old Data
@@ -458,7 +464,7 @@ You should receive an email with:
 
 **Solutions**:
 1. Verify images were uploaded successfully to GitHub
-   - Check `public/events/[uuid]/` for `.jpg` files
+   - Check `events/[uuid]/` in root directory for `.jpg` files
 2. Check image file sizes aren't too large (script optimizes to <500KB)
 3. Verify file permissions in Google Form settings (file upload enabled)
 4. Try re-submitting form with smaller images
@@ -587,7 +593,7 @@ If the upstream repository releases updates:
 - Export your script properties regularly (copy to secure note)
 
 **Registry:**
-- Download `public/events/_registry.enc` (encrypted backup)
+- Download `events/_registry.enc` (encrypted backup)
 - Keep master key safe to decrypt if needed
 
 **Events:**

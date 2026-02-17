@@ -82,15 +82,15 @@ const encrypted = CryptoJS.AES.encrypt(configJson, key).toString();
 
 // Create directory structure
 const projectRoot = path.join(__dirname, '..');
-const eventDir = path.join(projectRoot, 'public', 'events', uuid);
+const eventDir = path.join(projectRoot, 'events', uuid);
 
-console.log(`\n📁 Creating directory: public/events/${uuid}/`);
+console.log(`\n📁 Creating directory: events/${uuid}/`);
 fs.mkdirSync(eventDir, { recursive: true });
 
 // Write encrypted config
 const configPath = path.join(eventDir, 'config.enc');
 fs.writeFileSync(configPath, encrypted);
-console.log(`✅ Encrypted config saved to: public/events/${uuid}/config.enc`);
+console.log(`✅ Encrypted config saved to: events/${uuid}/config.enc`);
 
 // Display encrypted content preview
 const preview = encrypted.substring(0, 80) + (encrypted.length > 80 ? '...' : '');
@@ -129,11 +129,11 @@ console.log('\n📍 GitHub Pages (after deployment):');
 console.log(`   https://YOUR_USERNAME.github.io/wedding_gifts/?event=${uuid}#${key}`);
 
 console.log('\n📍 jsDelivr CDN (for testing CDN fetch):');
-console.log(`   Config URL: https://cdn.jsdelivr.net/gh/YOUR_USERNAME/wedding_gifts@main/public/events/${uuid}/config.enc`);
+console.log(`   Config URL: https://cdn.jsdelivr.net/gh/YOUR_USERNAME/wedding_gifts@main/events/${uuid}/config.enc`);
 
 console.log('\n💡 Tips:');
 console.log('   • Start a local server: python -m http.server 8000');
-console.log('   • Or use: npx serve public -p 3000');
+console.log('   • Or use: npx serve . -p 3000');
 console.log('   • The encryption key is in the URL hash (#) - never logged or sent to server');
 console.log('   • Test with wrong key to verify error handling');
 
@@ -150,12 +150,12 @@ const testInfo = {
   uuid,
   key,
   created: new Date().toISOString(),
-  configPath: `public/events/${uuid}/config.enc`,
+  configPath: `events/${uuid}/config.enc`,
   testUrl: `http://localhost:8000/?event=${uuid}#${key}`,
   githubPagesUrl: `https://YOUR_USERNAME.github.io/wedding_gifts/?event=${uuid}#${key}`,
-  cdnUrl: `https://cdn.jsdelivr.net/gh/YOUR_USERNAME/wedding_gifts@main/public/events/${uuid}/config.enc`
+  cdnUrl: `https://cdn.jsdelivr.net/gh/YOUR_USERNAME/wedding_gifts@main/events/${uuid}/config.enc`
 };
 
 const testInfoPath = path.join(eventDir, 'test-info.json');
 fs.writeFileSync(testInfoPath, JSON.stringify(testInfo, null, 2));
-console.log(`📝 Test info saved to: public/events/${uuid}/test-info.json\n`);
+console.log(`📝 Test info saved to: events/${uuid}/test-info.json\n`);

@@ -1,0 +1,9 @@
+{
+  "uuid": "45ab2306-7ae9-4475-a167-3504988064ff",
+  "key": "YIFv9tHcS02kLvN8CCmJYOLFIAGFKpgK",
+  "created": "2026-02-17T17:28:58.009Z",
+  "configPath": "public/events/45ab2306-7ae9-4475-a167-3504988064ff/config.enc",
+  "testUrl": "http://localhost:8000/?event=45ab2306-7ae9-4475-a167-3504988064ff#YIFv9tHcS02kLvN8CCmJYOLFIAGFKpgK",
+  "githubPagesUrl": "https://YOUR_USERNAME.github.io/wedding_gifts/?event=45ab2306-7ae9-4475-a167-3504988064ff#YIFv9tHcS02kLvN8CCmJYOLFIAGFKpgK",
+  "cdnUrl": "https://cdn.jsdelivr.net/gh/YOUR_USERNAME/wedding_gifts@main/public/events/45ab2306-7ae9-4475-a167-3504988064ff/config.enc"
+}

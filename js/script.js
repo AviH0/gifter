@@ -14,7 +14,7 @@ async function loadConfig() {
         try {
             // TODO: Update USERNAME/REPO to match your GitHub repository
             const baseUrl = 'https://cdn.jsdelivr.net/gh/USERNAME/REPO@main';
-            const configUrl = `${baseUrl}/public/events/${eventId}/config.enc`;
+            const configUrl = `${baseUrl}/events/${eventId}/config.enc`;
             
             const response = await fetch(configUrl);
             if (!response.ok) throw new Error('Config not found');

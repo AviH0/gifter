@@ -22,7 +22,7 @@ These scripts help you set up and test the entire system.
 - Creates a test event configuration with sample data
 - Generates a random UUID and encryption key
 - Encrypts the config using CryptoJS (same as frontend)
-- Saves to `public/events/[uuid]/config.enc`
+- Saves to `events/[uuid]/config.enc`
 - Outputs test URLs for local and deployed testing
 - Validates encryption/decryption works correctly
 
@@ -39,8 +39,8 @@ npm run test-encryption
 ```
 
 **Output:**
-- Creates: `public/events/[uuid]/config.enc` (encrypted config)
-- Creates: `public/events/[uuid]/test-info.json` (metadata)
+- Creates: `events/[uuid]/config.enc` (encrypted config)
+- Creates: `events/[uuid]/test-info.json` (metadata)
 - Prints: Test URLs with embedded UUID and encryption key
 
 **Example output:**
@@ -88,7 +88,7 @@ bash scripts/github-setup.sh
 ```
 
 **Interactive steps:**
-1. **GitHub Pages**: Instructions for configuring Pages to serve from `/public`
+1. **GitHub Pages**: Instructions for configuring Pages to serve from root
 2. **Personal Access Token**: Guide to create PAT with `repo` scope
 3. **Token validation**: Tests if token works with GitHub API
 4. **Apps Script properties**: Shows required configuration
@@ -153,7 +153,7 @@ npm run test-encryption
 # Start local server
 cd ..
 python -m http.server 8000
-# or: npx serve public -p 3000
+# or: npx serve . -p 3000
 ```
 
 ---
@@ -172,7 +172,7 @@ scripts/
 
 After running `test-encryption.js`:
 ```
-public/events/
+events/
 └── [uuid]/
     ├── config.enc            # Encrypted event config
     └── test-info.json        # Test metadata (UUID, key, URLs)
@@ -276,7 +276,7 @@ git status  # Should show git info
 
 **Solution:**
 - Check the URL has both `?event=UUID` and `#KEY`
-- Verify `public/events/[uuid]/config.enc` exists
+- Verify `events/[uuid]/config.enc` exists in root directory
 - Open browser console to see error messages
 
 **Problem:** "Invalid encryption key"
@@ -304,7 +304,7 @@ Before deploying to production:
 - [ ] Test URL loads encrypted config
 - [ ] Wrong key shows error message
 - [ ] No event param shows demo config
-- [ ] GitHub Pages is configured (serves from `/public`)
+- [ ] GitHub Pages is configured (serves from root)
 - [ ] Personal Access Token is created and tested
 - [ ] Apps Script properties are configured
 - [ ] Full flow tested: Form → GitHub → Browser
@@ -365,7 +365,7 @@ done
 const CryptoJS = require('crypto-js');
 const fs = require('fs');
 
-const encrypted = fs.readFileSync('public/events/UUID/config.enc', 'utf8');
+const encrypted = fs.readFileSync('events/UUID/config.enc', 'utf8');
 const key = 'your-32-character-key-here';
 
 const decrypted = CryptoJS.AES.decrypt(encrypted, key);

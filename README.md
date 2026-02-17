@@ -69,7 +69,7 @@ A serverless, encrypted platform for creating beautiful, private wedding and eve
 **Quick overview:**
 1. Fork this repository
 2. Create GitHub Personal Access Token
-3. Configure GitHub Pages from `/public` directory
+3. Configure GitHub Pages from root directory
 4. Create Google Form with required fields
 5. Set up Apps Script with our template
 6. Configure script properties (GitHub token, repo, etc.)
@@ -172,20 +172,19 @@ A serverless, encrypted platform for creating beautiful, private wedding and eve
 
 ```
 wedding_gifts/
-├── public/                    # GitHub Pages root (publicly served)
-│   ├── index.html            # Hebrew version (main entry)
-│   ├── en/index.html         # English version
-│   ├── js/
-│   │   ├── script.js         # Main logic + decryption
-│   │   └── config.js         # Demo/default config
-│   ├── css/style.css         # Responsive styles
-│   ├── assets/               # Default demo assets
-│   └── events/               # Event-specific data (encrypted)
-│       ├── _registry.enc     # Email→UUID mapping (encrypted)
-│       └── [uuid]/           # Per-event directory
-│           ├── config.enc    # Encrypted event config
-│           ├── metadata.enc  # Event metadata
-│           └── *.jpg         # Optimized images
+├── index.html                # Hebrew version (main entry)
+├── en/index.html             # English version
+├── js/
+│   ├── script.js             # Main logic + decryption
+│   └── config.js             # Demo/default config
+├── css/style.css             # Responsive styles
+├── assets/                   # Default demo assets
+├── events/                   # Event-specific data (encrypted)
+│   ├── _registry.enc         # Email→UUID mapping (encrypted)
+│   └── [uuid]/               # Per-event directory
+│       ├── config.enc        # Encrypted event config
+│       ├── metadata.enc      # Event metadata
+│       └── *.jpg             # Optimized images
 │
 ├── scripts/                   # Setup automation (not served)
 │   ├── templates/
@@ -255,12 +254,13 @@ This creates a test encrypted event in `public/events/test-[uuid]/` that you can
 This is the **multi-event-encrypted** branch implementing the full multi-event platform.
 
 **Completed:**
-- ✅ Repository restructuring (`public/` directory)
+- ✅ Multi-event encrypted platform
 - ✅ Frontend encryption and decryption logic
 - ✅ Apps Script template with full functionality
 - ✅ Setup automation scripts
 - ✅ Comprehensive documentation (Setup + User guides)
 - ✅ Testing utilities
+- ✅ Root directory deployment (GitHub Pages compatible)
 
 **Next Steps:**
 - Integration testing with real Google Form
