@@ -448,9 +448,57 @@ You should now see one trigger listed:
 
 ### 8. Test Your Setup
 
-Time to create your first test event and verify everything works!
+Time to verify encryption is working and create your first test event!
 
-**8.1. Submit Test Form**
+**8.1. Test Encryption First (IMPORTANT)**
+
+Before submitting the form, verify encryption is working correctly:
+
+1. In Apps Script editor, select `testEncryption` from the function dropdown (top of editor)
+2. Click the Run button (▶️)
+3. Check the execution log (View → Logs or Ctrl+Enter)
+4. You should see:
+   ```
+   === Testing Encryption/Decryption ===
+   
+   Test 1: ASCII text
+     Original: Hello, World!
+     Encrypted (base64): [long string]
+     Decrypted: Hello, World!
+     Match: ✓ PASS
+   
+   Test 2: JSON object
+     [...]
+     Match: ✓ PASS
+   
+   Test 3: Hebrew text (UTF-8)
+     Original: שלום עולם
+     [...]
+     Match: ✓ PASS
+   
+   Test 4: Browser compatibility check
+     Header check: ✓ PASS
+     Encrypted (base64) - Copy this to test in browser console:
+     [base64 string]
+   
+   === Summary ===
+   ✓ All tests PASSED! Encryption is working correctly.
+   ✓ You can now submit the form to create a new event.
+   ```
+
+5. **CRITICAL**: If any test shows "✗ FAIL", DO NOT proceed. Check that you:
+   - Copied the latest script template from `scripts/templates/apps-script.js`
+   - Saved the script (Ctrl+S)
+   - Refreshed the page and tried again
+
+6. **Optional Browser Test**: To verify browser compatibility:
+   - Copy the base64 string from Test 4
+   - Open your event page in browser
+   - Open developer console (F12)
+   - Run: `decryptConfig("[paste-base64-here]", "[paste-key-here]").then(r => console.log("Result:", r))`
+   - Should output: `Result: {"test":"data"}`
+
+**8.2. Submit Test Form**
 
 1. Go back to your Google Form
 2. Click "Preview" (eye icon) to open the form
@@ -462,14 +510,14 @@ Time to create your first test event and verify everything works!
    - Skip image uploads for first test (faster)
 4. Click "Submit"
 
-**8.2. Monitor Execution**
+**8.3. Monitor Execution**
 
 1. Return to Apps Script editor
-2. Click the clock icon (Executions)
+2. Click the clock icon (⏰) on left sidebar (Executions)
 3. You should see a new execution running or completed
 4. Click on it to see the log
 
-**8.3. Check for Success**
+**8.4. Check for Success**
 
 Successful execution shows:
 ```
@@ -483,35 +531,52 @@ Registry updated
 Email sent - process complete!
 ```
 
-**8.4. Verify GitHub Commit**
+**8.5. Verify GitHub Commit**
 
 1. Go to your GitHub repository
 2. Navigate to `public/events/` directory
 3. You should see a new folder named with a UUID
 4. Inside: `config.enc` and `metadata.enc` files
-5. Check recent commits - should see "Add/Update event [UUID]"
+5. Check recent commits - should see "Create event [UUID]"
 
-**8.5. Check Your Email**
+**8.6. Check Your Email**
 
 You should receive an email with:
-- Subject: "Your Event URL is Ready!" (or similar)
+- Subject: "Your Wedding Gifts Event is Ready!"
 - Your unique event URL in format: `https://[username].github.io/wedding_gifts/?event=[uuid]#[key]`
 - Instructions for sharing
 
-**8.6. Test Your Event Page**
+**8.7. Test Your Event Page**
 
 1. Copy the full URL from the email (including the `#` and everything after)
 2. Paste it in your browser
 3. Wait ~1-2 minutes for jsDelivr CDN to cache your new event
 4. Your event page should load with your custom data!
 
-**8.7. Test Update Functionality**
+**8.8. Troubleshoot Decryption Errors**
+
+If the page shows "Failed to decrypt config" or displays garbage:
+
+1. Open browser console (F12)
+2. Look for detailed logs showing decryption process
+3. Check for these errors:
+   - "Header: [not 'Salted__']" → Encryption format issue, re-run `testEncryption()`
+   - "Decrypted string starts with: Ǭ3:=" → Key mismatch, verify latest script is deployed
+   - "Failed to load event config" → File not found, wait 1-2 minutes for CDN
+
+4. If still broken, create a new test event:
+   - Update your Apps Script with latest template from `scripts/templates/apps-script.js`
+   - Run `testEncryption()` - must show all PASS
+   - Submit form again to create a NEW event with fixed encryption
+
+**8.9. Test Update Functionality**
 
 1. Return to the form and submit again with the **same email**
 2. Change some details (e.g., different title)
 3. Submit the form
 4. Check your email - you'll receive the **same URL** (same UUID and key)
-5. Refresh your event page - it should show updated content
+5. Wait ~1-2 minutes for CDN cache to update
+6. Refresh your event page - it should show updated content
 
 ### Troubleshooting
 
