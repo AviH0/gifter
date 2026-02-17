@@ -541,7 +541,7 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
   
   // Commit config.enc
   commitFile(
-    baseUrl + 'public/events/' + uuid + '/config.enc',
+    baseUrl + 'events/' + uuid + '/config.enc',
     encryptedConfig,
     isUpdate ? 'Update event ' + uuid : 'Create event ' + uuid,
     branch,
@@ -558,7 +558,7 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
   };
   const encryptedMetadata = encryptAES(JSON.stringify(metadata), props.getProperty('MASTER_KEY'));
   commitFile(
-    baseUrl + 'public/events/' + uuid + '/metadata.enc',
+    baseUrl + 'events/' + uuid + '/metadata.enc',
     encryptedMetadata,
     isUpdate ? 'Update metadata for ' + uuid : 'Create metadata for ' + uuid,
     branch,
@@ -569,7 +569,7 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
   // Commit images if provided
   if (images.wedding) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/wedding.jpg',
+      baseUrl + 'events/' + uuid + '/wedding.jpg',
       images.wedding,
       'Add wedding image for ' + uuid,
       branch,
@@ -580,7 +580,7 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
   
   if (images.bgLight) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/bg-light.jpg',
+      baseUrl + 'events/' + uuid + '/bg-light.jpg',
       images.bgLight,
       'Add light background for ' + uuid,
       branch,
@@ -591,7 +591,7 @@ function commitToGitHub(uuid, encryptedConfig, images, email, key, isUpdate) {
   
   if (images.bgDark) {
     commitBinaryFile(
-      baseUrl + 'public/events/' + uuid + '/bg-dark.jpg',
+      baseUrl + 'events/' + uuid + '/bg-dark.jpg',
       images.bgDark,
       'Add dark background for ' + uuid,
       branch,
@@ -723,7 +723,7 @@ function getEventByEmail(email) {
     }
     
     // Fetch registry from GitHub
-    const url = 'https://api.github.com/repos/' + repo + '/contents/public/events/_registry.enc?ref=' + branch;
+    const url = 'https://api.github.com/repos/' + repo + '/contents/events/_registry.enc?ref=' + branch;
     const headers = {
       'Authorization': 'token ' + token,
       'Accept': 'application/vnd.github.v3+json'
@@ -781,7 +781,7 @@ function updateRegistry(email, uuid, key, isUpdate) {
   let registrySha = null;
   
   try {
-    const url = 'https://api.github.com/repos/' + repo + '/contents/public/events/_registry.enc?ref=' + branch;
+    const url = 'https://api.github.com/repos/' + repo + '/contents/events/_registry.enc?ref=' + branch;
     const headers = {
       'Authorization': 'token ' + token,
       'Accept': 'application/vnd.github.v3+json'
@@ -820,7 +820,7 @@ function updateRegistry(email, uuid, key, isUpdate) {
   const registryJson = JSON.stringify(registry, null, 2);
   const encrypted = encryptAES(registryJson, masterKey);
   
-  const url = 'https://api.github.com/repos/' + repo + '/contents/public/events/_registry.enc';
+  const url = 'https://api.github.com/repos/' + repo + '/contents/events/_registry.enc';
   const headers = {
     'Authorization': 'token ' + token,
     'Accept': 'application/vnd.github.v3+json'
