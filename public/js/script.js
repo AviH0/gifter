@@ -5,8 +5,54 @@ if (lang === 'he') {
     document.documentElement.dir = 'rtl';
 }
 
+// Load config from encrypted URL or fallback to demo
+async function loadConfig() {
+    const eventId = new URLSearchParams(window.location.search).get('event');
+    const key = window.location.hash.substring(1);
+    
+    if (eventId && key) {
+        try {
+            // TODO: Update USERNAME/REPO to match your GitHub repository
+            const baseUrl = 'https://cdn.jsdelivr.net/gh/USERNAME/REPO@main';
+            const configUrl = `${baseUrl}/public/events/${eventId}/config.enc`;
+            
+            const response = await fetch(configUrl);
+            if (!response.ok) throw new Error('Config not found');
+            
+            const encrypted = await response.text();
+            const decrypted = CryptoJS.AES.decrypt(encrypted, key);
+            const configStr = decrypted.toString(CryptoJS.enc.Utf8);
+            
+            if (!configStr) throw new Error('Invalid encryption key');
+            
+            const config = JSON.parse(configStr);
+            
+            // Validate structure
+            if (!config.title || !config.message || !config.gifts) {
+                throw new Error('Invalid config');
+            }
+            
+            return config;
+        } catch (err) {
+            console.error('Failed to load event:', err);
+            alert(`Unable to load event: ${err.message}`);
+            return null;
+        }
+    }
+    
+    // Fallback to demo config
+    return window.config;
+}
+
 // Load config and populate page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    const config = await loadConfig();
+    if (!config) {
+        document.getElementById('title').textContent = lang === 'en' ? 'Event Not Found' : 'אירוע לא נמצא';
+        document.getElementById('message').textContent = lang === 'en' ? 'Unable to load event configuration.' : 'לא ניתן לטעון את תצורת האירוע.';
+        return;
+    }
+    
     // Update base href if repoName differs from default
     if (config.repoName && config.repoName !== 'gifter') {
         document.querySelector('base').href = `/${config.repoName}/`;
