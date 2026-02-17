@@ -52,9 +52,37 @@
 function onFormSubmit(e) {
   try {
     Logger.log('Form submission started');
+    Logger.log('Event object type: ' + typeof e);
+    Logger.log('Event object keys: ' + (e ? Object.keys(e).join(', ') : 'null'));
+    
+    // Validate event object
+    if (!e) {
+      throw new Error('Event object is null or undefined. Make sure the trigger is set up correctly as "On form submit".');
+    }
+    
+    if (!e.namedValues) {
+      Logger.log('ERROR: e.namedValues is undefined');
+      Logger.log('Available properties: ' + Object.keys(e).join(', '));
+      throw new Error('Event does not contain namedValues. This usually means:\n' +
+                      '1. The trigger is not set up as "On form submit"\n' +
+                      '2. Or you are trying to test the function manually\n\n' +
+                      'Please ensure the trigger is configured as:\n' +
+                      '- Event source: From form\n' +
+                      '- Event type: On form submit');
+    }
     
     const responses = e.namedValues;
-    const email = responses['אימייל'][0].trim().toLowerCase();
+    Logger.log('Response fields: ' + Object.keys(responses).join(', '));
+    
+    // Get email - try both Hebrew and English field names
+    let email;
+    if (responses['אימייל'] && responses['אימייל'][0]) {
+      email = responses['אימייל'][0].trim().toLowerCase();
+    } else if (responses['Email'] && responses['Email'][0]) {
+      email = responses['Email'][0].trim().toLowerCase();
+    } else {
+      throw new Error('Email field not found. Available fields: ' + Object.keys(responses).join(', '));
+    }
     
     Logger.log('Email: ' + email);
     
@@ -100,16 +128,29 @@ function onFormSubmit(e) {
     
   } catch (error) {
     Logger.log('ERROR: ' + error.toString());
-    Logger.log(error.stack);
+    Logger.log('ERROR Stack: ' + error.stack);
     
     // Try to notify user of error
     try {
-      const email = e.namedValues['Email'][0];
-      MailApp.sendEmail({
-        to: email,
-        subject: 'Error Creating Your Event',
-        body: 'Sorry, there was an error processing your event. Please try again or contact support.\n\nError: ' + error.toString()
-      });
+      let email = null;
+      if (e && e.namedValues) {
+        if (e.namedValues['אימייל'] && e.namedValues['אימייל'][0]) {
+          email = e.namedValues['אימייל'][0];
+        } else if (e.namedValues['Email'] && e.namedValues['Email'][0]) {
+          email = e.namedValues['Email'][0];
+        }
+      }
+      
+      if (email) {
+        MailApp.sendEmail({
+          to: email,
+          subject: 'Error Creating Your Event',
+          body: 'Sorry, there was an error processing your event. Please try again or contact support.\n\nError: ' + error.toString() + '\n\nIf this problem persists, please check the Apps Script execution log.'
+        });
+        Logger.log('Error notification email sent to: ' + email);
+      } else {
+        Logger.log('Could not send error email - no email address found');
+      }
     } catch (mailError) {
       Logger.log('Failed to send error email: ' + mailError.toString());
     }
