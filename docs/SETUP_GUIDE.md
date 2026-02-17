@@ -486,7 +486,7 @@ Email sent - process complete!
 **8.4. Verify GitHub Commit**
 
 1. Go to your GitHub repository
-2. Navigate to `events/` directory
+2. Navigate to `public/events/` directory
 3. You should see a new folder named with a UUID
 4. Inside: `config.enc` and `metadata.enc` files
 5. Check recent commits - should see "Add/Update event [UUID]"
