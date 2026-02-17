@@ -1,0 +1,19 @@
+{
+  "name": "wedding-gifts",
+  "version": "2.0.0",
+  "description": "Multi-event encrypted wedding gifts platform",
+  "scripts": {
+    "test": "node tests/encryption-test.js",
+    "test:browser": "echo 'Open tests/browser-test.html in your browser' && open tests/browser-test.html || xdg-open tests/browser-test.html || start tests/browser-test.html",
+    "test:all": "npm test && npm run test:browser"
+  },
+  "keywords": [
+    "wedding",
+    "gifts",
+    "encrypted",
+    "multi-event"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {}
+}

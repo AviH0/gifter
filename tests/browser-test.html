@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Encryption/Decryption Test</title>
+  <style>
+    body {
+      font-family: 'Monaco', 'Courier New', monospace;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+    }
+    h1 {
+      border-bottom: 2px solid #4ec9b0;
+      padding-bottom: 10px;
+      color: #4ec9b0;
+    }
+    h2 {
+      color: #569cd6;
+      margin-top: 30px;
+    }
+    .test-section {
+      background: #252526;
+      border: 1px solid #3e3e42;
+      border-radius: 4px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    .test-result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .pass {
+      background: #1e3a1e;
+      border-left: 4px solid #4ec9b0;
+      color: #4ec9b0;
+    }
+    .fail {
+      background: #3a1e1e;
+      border-left: 4px solid #f48771;
+      color: #f48771;
+    }
+    .info {
+      background: #1e2a3a;
+      border-left: 4px solid #569cd6;
+      color: #569cd6;
+    }
+    pre {
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+    button {
+      background: #0e639c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #1177bb;
+    }
+    button:disabled {
+      background: #3e3e42;
+      cursor: not-allowed;
+    }
+    .summary {
+      margin-top: 30px;
+      padding: 20px;
+      background: #252526;
+      border: 2px solid #4ec9b0;
+      border-radius: 4px;
+    }
+    .summary.error {
+      border-color: #f48771;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #1e1e1e;
+      border: 1px solid #3e3e42;
+      color: #d4d4d4;
+      border-radius: 4px;
+      font-family: inherit;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      color: #569cd6;
+      font-weight: bold;
+    }
+    .code {
+      color: #ce9178;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔐 Browser Encryption/Decryption Test</h1>
+  
+  <div class="test-section">
+    <h2>Automated Tests</h2>
+    <p>These tests verify that the browser's <code>decryptConfig()</code> function works correctly.</p>
+    <button onclick="runAllTests()">Run All Tests</button>
+    <div id="test-results"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>Manual Test: Decrypt Custom Data</h2>
+    <p>Paste encrypted data from Apps Script <code>testEncryption()</code> function to verify compatibility.</p>
+    
+    <label for="encrypted-input">Encrypted Data (Base64):</label>
+    <textarea id="encrypted-input" rows="4" placeholder="U2FsdGVkX1..."></textarea>
+    
+    <label for="key-input">Decryption Key:</label>
+    <input type="text" id="key-input" placeholder="test-key-32-characters-long!!">
+    
+    <button onclick="testManualDecrypt()">Decrypt</button>
+    
+    <div id="manual-result"></div>
+  </div>
+
+  <!-- Load decryption library -->
+  <script src="../js/decrypt.js"></script>
+
+  <script>
+    // Test data (matches Node.js tests)
+    const testCases = [
+      {
+        name: 'Simple ASCII text',
+        plaintext: 'Hello, World!',
+        key: 'test-key-32-characters-long!!'
+      },
+      {
+        name: 'JSON object',
+        plaintext: JSON.stringify({
+          eventId: 'test-uuid-123',
+          title: { en: 'Test Event', he: 'אירוע בדיקה' },
+          message: { en: 'Send us a gift!', he: 'שלחו לנו מתנה!' },
+          gifts: [{ name: { en: 'PayPal', he: 'פייפאל' }, url: ['https://paypal.me/test'] }]
+        }),
+        key: 'another-test-key-32-chars!!!'
+      },
+      {
+        name: 'Hebrew UTF-8 text',
+        plaintext: 'שלום עולם! こんにちは世界',
+        key: 'test-key-with-unicode-support'
+      }
+    ];
+
+    // Encryption function (simplified version matching Apps Script)
+    async function encryptForTest(plaintext, passphrase) {
+      // Generate random salt
+      const salt = new Uint8Array(8);
+      crypto.getRandomValues(salt);
+      
+      // Derive key
+      const saltString = String.fromCharCode.apply(null, Array.from(salt));
+      const keyMaterial = passphrase + saltString;
+      const keyMaterialUtf8 = new TextEncoder().encode(keyMaterial);
+      const keyBytes = new Uint8Array(await crypto.subtle.digest('SHA-256', keyMaterialUtf8));
+      
+      // Encrypt with XOR
+      const textBytes = new TextEncoder().encode(plaintext);
+      const encrypted = new Uint8Array(textBytes.length);
+      for (let i = 0; i < textBytes.length; i++) {
+        encrypted[i] = textBytes[i] ^ keyBytes[i % keyBytes.length];
+      }
+      
+      // Format: "Salted__" + salt + encrypted
+      const header = new TextEncoder().encode('Salted__');
+      const fullData = new Uint8Array(header.length + salt.length + encrypted.length);
+      fullData.set(header, 0);
+      fullData.set(salt, header.length);
+      fullData.set(encrypted, header.length + salt.length);
+      
+      // Return as base64
+      return btoa(String.fromCharCode.apply(null, Array.from(fullData)));
+    }
+
+    async function runAllTests() {
+      const resultsDiv = document.getElementById('test-results');
+      resultsDiv.innerHTML = '<div class="info">Running tests...</div>';
+      
+      let passed = 0;
+      let failed = 0;
+      let html = '';
+      
+      for (const test of testCases) {
+        try {
+          // Encrypt
+          const encrypted = await encryptForTest(test.plaintext, test.key);
+          
+          // Decrypt
+          const decrypted = await decryptConfig(encrypted, test.key);
+          
+          // Verify
+          if (decrypted === test.plaintext) {
+            passed++;
+            html += `
+              <div class="test-result pass">
+                <strong>✓ PASS:</strong> ${test.name}<br>
+                <small>Original: ${test.plaintext.substring(0, 50)}${test.plaintext.length > 50 ? '...' : ''}</small><br>
+                <small>Decrypted: ${decrypted.substring(0, 50)}${decrypted.length > 50 ? '...' : ''}</small>
+              </div>
+            `;
+          } else {
+            failed++;
+            html += `
+              <div class="test-result fail">
+                <strong>✗ FAIL:</strong> ${test.name} (mismatch)<br>
+                <small>Expected: ${test.plaintext}</small><br>
+                <small>Got: ${decrypted}</small>
+              </div>
+            `;
+          }
+        } catch (error) {
+          failed++;
+          html += `
+            <div class="test-result fail">
+              <strong>✗ FAIL:</strong> ${test.name} (error)<br>
+              <small>Error: ${error.message}</small>
+            </div>
+          `;
+        }
+      }
+      
+      // Summary
+      const summaryClass = failed === 0 ? '' : 'error';
+      html += `
+        <div class="summary ${summaryClass}">
+          <h3>Summary</h3>
+          <p><strong>Total:</strong> ${passed + failed}</p>
+          <p><strong>Passed:</strong> ✓ ${passed}</p>
+          <p><strong>Failed:</strong> ✗ ${failed}</p>
+          ${failed === 0 ? '<p>✓ All tests passed! Browser decryption is working correctly.</p>' : '<p>✗ Some tests failed. Check console for details.</p>'}
+        </div>
+      `;
+      
+      resultsDiv.innerHTML = html;
+    }
+
+    async function testManualDecrypt() {
+      const encrypted = document.getElementById('encrypted-input').value.trim();
+      const key = document.getElementById('key-input').value.trim();
+      const resultDiv = document.getElementById('manual-result');
+      
+      if (!encrypted || !key) {
+        resultDiv.innerHTML = '<div class="test-result fail">Please enter both encrypted data and key.</div>';
+        return;
+      }
+      
+      try {
+        const decrypted = await decryptConfig(encrypted, key);
+        
+        // Try to parse as JSON
+        let formatted = decrypted;
+        try {
+          const parsed = JSON.parse(decrypted);
+          formatted = JSON.stringify(parsed, null, 2);
+        } catch (e) {
+          // Not JSON, use as-is
+        }
+        
+        resultDiv.innerHTML = `
+          <div class="test-result pass">
+            <strong>✓ Decryption successful!</strong><br>
+            <pre>${formatted}</pre>
+          </div>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="test-result fail">
+            <strong>✗ Decryption failed</strong><br>
+            Error: ${error.message}
+          </div>
+        `;
+        console.error('Decryption error:', error);
+      }
+    }
+
+    // Auto-run tests on load
+    window.addEventListener('load', () => {
+      console.log('Browser test page loaded. Run tests by clicking the button.');
+    });
+  </script>
+</body>
+</html>
