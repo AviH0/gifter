@@ -25,3 +25,8 @@ public/events/test-*/
 # Secrets
 secrets.json
 github-token.txt
+
+# Google OAuth credentials (DO NOT COMMIT)
+scripts/credentials.json
+scripts/token.json
+scripts/form-info.json

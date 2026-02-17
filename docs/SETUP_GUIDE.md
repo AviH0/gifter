@@ -135,6 +135,66 @@ The demo should work immediately without any URL parameters. This confirms your 
 
 The form is the interface where event creators will submit their event details.
 
+**You have two options:**
+
+**Option A: Automated Creation (Recommended)** - Use the automated form creator script
+**Option B: Manual Creation** - Create the form manually through Google Forms UI
+
+---
+
+#### Option A: Automated Form Creation (Recommended)
+
+Use the automated form creator script to generate the form with all fields automatically.
+
+**Prerequisites:**
+- Node.js 14+ installed
+- Google Cloud project with Forms API and Drive API enabled
+- OAuth 2.0 credentials (see `scripts/FORM_CREATOR_README.md` for detailed setup)
+
+**Steps:**
+
+1. **Set up Google Cloud credentials:**
+   ```bash
+   # Follow the guide in scripts/FORM_CREATOR_README.md
+   # Download credentials.json to scripts/ directory
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   cd scripts/
+   npm install
+   ```
+
+3. **Run the form creator:**
+   ```bash
+   # Basic: Create form with 5 gifts
+   node form-creator.js
+
+   # Advanced: Customize number of gifts
+   node form-creator.js --gifts=10
+   ```
+
+4. **Complete OAuth flow** (first time only):
+   - Script displays authorization URL
+   - Open URL in browser and sign in
+   - Grant permissions
+   - Copy authorization code
+   - Paste code in terminal
+
+5. **Form created!** - The script outputs:
+   - Form ID
+   - Edit URL (for you to review/modify)
+   - Public URL (for users to submit)
+   - Drive folder ID (for uploads)
+
+6. **Continue to Step 5** to set up the Apps Script
+
+**See `scripts/FORM_CREATOR_README.md` for detailed documentation.**
+
+---
+
+#### Option B: Manual Form Creation
+
 **4.1. Create Form**
 
 1. Go to [forms.google.com](https://forms.google.com)

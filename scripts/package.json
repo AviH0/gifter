@@ -4,11 +4,14 @@
   "description": "Setup and testing scripts for multi-event wedding gifts platform",
   "private": true,
   "scripts": {
-    "test-encryption": "node test-encryption.js"
+    "test-encryption": "node test-encryption.js",
+    "create-form": "node form-creator.js",
+    "setup": "bash github-setup.sh"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "googleapis": "^134.0.0"
   },
   "engines": {
     "node": ">=14.0.0"
