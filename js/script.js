@@ -52,17 +52,35 @@ async function loadConfig() {
             
             const encrypted = await response.text();
             
-            // Use new XOR decryption (from decrypt.js)
+            // Try multiple decryption methods for compatibility
             let configStr;
-            if (typeof decryptConfig === 'function') {
-                configStr = await decryptConfig(encrypted, key);
-            } else {
-                // Fallback to CryptoJS if decrypt.js not loaded
-                const decrypted = CryptoJS.AES.decrypt(encrypted, key);
-                configStr = decrypted.toString(CryptoJS.enc.Utf8);
+            try {
+                if (typeof decryptConfig === 'function') {
+                    console.log('Trying XOR decryption...');
+                    configStr = await decryptConfig(encrypted, key);
+                } else {
+                    throw new Error('decrypt.js not loaded');
+                }
+            } catch (xorError) {
+                console.log('XOR decryption failed, trying CryptoJS fallback:', xorError.message);
+                // Fallback to CryptoJS for old events
+                try {
+                    const decrypted = CryptoJS.AES.decrypt(encrypted, key);
+                    configStr = decrypted.toString(CryptoJS.enc.Utf8);
+                    if (!configStr) throw new Error('CryptoJS decryption returned empty');
+                    console.log('CryptoJS decryption succeeded!');
+                } catch (cryptoError) {
+                    console.log('CryptoJS also failed, trying base64:', cryptoError.message);
+                    // Last resort: try plain base64
+                    try {
+                        configStr = atob(encrypted);
+                    } catch (base64Error) {
+                        throw new Error(`All decryption methods failed. XOR: ${xorError.message}, CryptoJS: ${cryptoError.message}`);
+                    }
+                }
             }
             
-            if (!configStr) throw new Error('Invalid encryption key');
+            if (!configStr) throw new Error('Decryption returned empty string');
             
             const config = JSON.parse(configStr);
             

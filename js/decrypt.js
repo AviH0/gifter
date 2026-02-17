@@ -40,6 +40,9 @@ async function sha256(message) {
  */
 async function decryptConfig(ciphertext, passphrase) {
   try {
+    console.log('Decrypting with passphrase length:', passphrase.length);
+    console.log('Ciphertext length:', ciphertext.length);
+    
     // Decode from base64
     const binaryString = atob(ciphertext);
     const fullData = new Uint8Array(binaryString.length);
@@ -47,18 +50,26 @@ async function decryptConfig(ciphertext, passphrase) {
       fullData[i] = binaryString.charCodeAt(i);
     }
     
+    console.log('Decoded length:', fullData.length);
+    
     // Check for "Salted__" header
     const header = bytesToString(fullData.slice(0, 8));
+    console.log('Header:', JSON.stringify(header));
     
     if (header === 'Salted__') {
       // Extract salt and encrypted data
       const salt = fullData.slice(8, 16);
       const encrypted = fullData.slice(16);
       
+      console.log('Salt bytes:', Array.from(salt).slice(0, 8));
+      console.log('Encrypted data length:', encrypted.length);
+      
       // Derive key from passphrase and salt (same as Apps Script)
       const saltString = bytesToString(salt);
       const keyMaterial = passphrase + saltString;
       const keyBytes = await sha256(keyMaterial);
+      
+      console.log('Key bytes (first 16):', Array.from(keyBytes).slice(0, 16));
       
       // XOR decryption
       const decrypted = new Uint8Array(encrypted.length);
@@ -66,8 +77,12 @@ async function decryptConfig(ciphertext, passphrase) {
         decrypted[i] = encrypted[i] ^ keyBytes[i % keyBytes.length];
       }
       
+      console.log('Decrypted first 20 bytes:', Array.from(decrypted).slice(0, 20));
+      
       // Convert to string
-      return new TextDecoder().decode(decrypted);
+      const result = new TextDecoder().decode(decrypted);
+      console.log('Decrypted string starts with:', result.substring(0, 50));
+      return result;
     } else {
       // Fallback: assume it's just base64 encoded
       console.warn('No encryption header found, treating as base64');
