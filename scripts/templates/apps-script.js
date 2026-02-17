@@ -924,3 +924,117 @@ function testEncryption() {
     Logger.log('✗ Encryption/Decryption failed!');
   }
 }
+
+/**
+ * Debug helper: List all form fields
+ * Run this manually to see all field names in your form
+ * This helps verify field names match what the script expects
+ */
+function debugFormFields() {
+  try {
+    const form = FormApp.getActiveForm();
+    Logger.log('=== Form Debug Info ===');
+    Logger.log('Form ID: ' + form.getId());
+    Logger.log('Form Title: ' + form.getTitle());
+    Logger.log('\n=== Form Fields ===');
+    
+    const items = form.getItems();
+    items.forEach((item, index) => {
+      const type = item.getType().toString();
+      const title = item.getTitle();
+      Logger.log((index + 1) + '. [' + type + '] "' + title + '"');
+      
+      // For choice items, show options
+      if (type === 'MULTIPLE_CHOICE' || type === 'LIST' || type === 'CHECKBOX') {
+        try {
+          const choiceItem = item.asMultipleChoiceItem();
+          const choices = choiceItem.getChoices();
+          choices.forEach(choice => {
+            Logger.log('   - ' + choice.getValue());
+          });
+        } catch (e) {
+          // Not a choice item
+        }
+      }
+    });
+    
+    Logger.log('\n=== Expected Field Names (Hebrew) ===');
+    Logger.log('Basic fields:');
+    Logger.log('  - אימייל');
+    Logger.log('  - כותרת האירוע (אנגלית)');
+    Logger.log('  - כותרת האירוע (עברית)');
+    Logger.log('  - הודעה לאורחים (אנגלית)');
+    Logger.log('  - הודעה לאורחים (עברית)');
+    Logger.log('  - תמונת האירוע (file upload)');
+    Logger.log('  - רקע בהיר (file upload)');
+    Logger.log('  - רקע כהה (file upload)');
+    Logger.log('\nFirst gift fields (no "מתנה 1" prefix):');
+    Logger.log('  - שם אמצעי התשלום (אנגלית)');
+    Logger.log('  - שם אמצעי התשלום (עברית)');
+    Logger.log('  - קישורי תשלום');
+    Logger.log('  - לוגו אמצעי התשלום');
+    Logger.log('  - להוסיף אמצעי תשלום נוסף?');
+    Logger.log('\nSubsequent gifts (numbered 2-10):');
+    Logger.log('  - מתנה N - שם (אנגלית)');
+    Logger.log('  - מתנה N - שם (עברית)');
+    Logger.log('  - מתנה N - קישורים');
+    Logger.log('  - מתנה N - לוגו');
+    Logger.log('  - להוסיף אמצעי תשלום נוסף?');
+    
+    Logger.log('\nℹ️  Compare your actual field names with the expected names above.');
+    Logger.log('ℹ️  Even a single space or character difference will cause errors.');
+    
+  } catch (error) {
+    Logger.log('ERROR: ' + error.toString());
+    Logger.log('Make sure this script is bound to a Google Form.');
+    Logger.log('Open the script from: Form → Extensions → Apps Script');
+  }
+}
+
+/**
+ * Debug helper: Test trigger configuration
+ * Run this to check if triggers are set up correctly
+ */
+function debugTriggers() {
+  Logger.log('=== Trigger Configuration ===');
+  
+  const triggers = ScriptApp.getProjectTriggers();
+  
+  if (triggers.length === 0) {
+    Logger.log('✗ No triggers configured!');
+    Logger.log('\nTo add a trigger:');
+    Logger.log('1. Click the clock icon (⏰) on the left sidebar');
+    Logger.log('2. Click "+ Add Trigger" (bottom right)');
+    Logger.log('3. Configure:');
+    Logger.log('   - Function: onFormSubmit');
+    Logger.log('   - Event source: From form');
+    Logger.log('   - Event type: On form submit');
+    Logger.log('4. Click "Save"');
+    return;
+  }
+  
+  Logger.log('Found ' + triggers.length + ' trigger(s):\n');
+  
+  triggers.forEach((trigger, index) => {
+    Logger.log('Trigger ' + (index + 1) + ':');
+    Logger.log('  Function: ' + trigger.getHandlerFunction());
+    Logger.log('  Event Type: ' + trigger.getEventType());
+    Logger.log('  Source: ' + trigger.getTriggerSource());
+    
+    const isCorrect = 
+      trigger.getHandlerFunction() === 'onFormSubmit' &&
+      trigger.getEventType().toString() === 'ON_FORM_SUBMIT' &&
+      trigger.getTriggerSource().toString() === 'FORMS';
+    
+    if (isCorrect) {
+      Logger.log('  Status: ✓ Correctly configured');
+    } else {
+      Logger.log('  Status: ✗ Incorrect configuration');
+      Logger.log('  Expected:');
+      Logger.log('    - Function: onFormSubmit');
+      Logger.log('    - Event Type: ON_FORM_SUBMIT');
+      Logger.log('    - Source: FORMS');
+    }
+    Logger.log('');
+  });
+}

@@ -407,16 +407,25 @@ Your Script Properties section should now show 5 properties. Double-check:
 
 The trigger automatically runs the script when someone submits the form.
 
+**IMPORTANT**: Incorrect trigger configuration is the #1 cause of errors. Follow these steps exactly.
+
 **7.1. Create Trigger**
 
-1. In Apps Script editor, click the clock/alarm icon on the left sidebar (Triggers)
+1. In Apps Script editor, click the clock/alarm icon (⏰) on the left sidebar (Triggers)
 2. Click "+ Add Trigger" (bottom right)
-3. Configure trigger:
-   - **Function**: Select `onFormSubmit`
-   - **Deployment**: Select "Head"
-   - **Event source**: Select "From form"
-   - **Event type**: Select "On form submit"
+3. Configure trigger with these EXACT settings:
+   - **Choose which function to run**: Select `onFormSubmit` (exact spelling)
+   - **Choose which deployment should run**: Select "Head"
+   - **Select event source**: Select "From form" (NOT "From spreadsheet" or "Time-driven")
+   - **Select event type**: Select "On form submit"
+   - **Failure notification settings**: Leave default (notify immediately)
 4. Click "Save"
+
+**⚠️ Common Mistakes to Avoid**:
+- Wrong function name (must be exactly `onFormSubmit`)
+- Wrong event source (must be "From form", not spreadsheet)
+- Wrong event type (must be "On form submit")
+- Multiple triggers (should only have ONE trigger)
 
 **7.2. Grant Permissions**
 
@@ -505,6 +514,74 @@ You should receive an email with:
 5. Refresh your event page - it should show updated content
 
 ### Troubleshooting
+
+#### "Cannot read properties of undefined" Error
+
+**Problem**: Form submission fails with error `TypeError: Cannot read properties of undefined (reading 'אימייל')` in execution logs.
+
+**Cause**: The form submission trigger is not configured correctly, or the event object isn't being passed properly to the script.
+
+**Solutions**:
+
+1. **Verify trigger configuration** (MOST COMMON ISSUE):
+   - In Apps Script editor, click the clock/alarm icon (⏰) on left sidebar
+   - You should see one trigger with these exact settings:
+     - **Function**: `onFormSubmit`
+     - **Event source**: "From form"
+     - **Event type**: "On form submit"
+   - If trigger is missing or has wrong settings:
+     - Delete any existing triggers
+     - Click "+ Add Trigger"
+     - Configure exactly as shown in [Step 7](#7-add-form-submit-trigger)
+     - Click "Save" and re-authorize if prompted
+
+2. **Check field names match exactly**:
+   - Run the debug helper function:
+     - In Apps Script editor, select `debugFormFields` from function dropdown
+     - Click "Run" (▶️ button)
+     - Check "Execution log" tab (View → Logs)
+     - Compare your actual field names with expected Hebrew names
+   - Even one extra space or different character will cause errors
+   - Hebrew field names must match EXACTLY:
+     - `אימייל` (not `Email` or `אימייל ` with trailing space)
+     - `שם אמצעי התשלום (אנגלית)` for first gift
+     - `מתנה 2 - שם (אנגלית)` for subsequent gifts
+
+3. **Verify Apps Script is bound to the form**:
+   - Apps Script must be opened from: Form → ⋮ (three dots) → "Script editor"
+   - If you created script separately, it won't receive form events
+   - Solution: Create new script from form's menu
+
+4. **Test with debug logging**:
+   - The enhanced error handling logs detailed information
+   - Submit form and check execution logs (clock icon → click execution)
+   - Look for lines showing:
+     - "Event object type"
+     - "Event object keys"
+     - "Response fields" (shows what fields were received)
+   - This reveals exactly what's being passed to the script
+
+5. **Run diagnostic functions**:
+   ```javascript
+   // In Apps Script editor:
+   
+   // 1. Check trigger setup
+   debugTriggers()  // Select from dropdown, click Run
+   
+   // 2. Check form field names
+   debugFormFields()  // Select from dropdown, click Run
+   
+   // 3. Check script properties
+   testSetup()  // Select from dropdown, click Run
+   ```
+
+**Quick Fix Checklist**:
+- [ ] Trigger exists and is active
+- [ ] Trigger function is `onFormSubmit` (exact spelling)
+- [ ] Trigger event type is "On form submit"
+- [ ] Apps Script opened from form's menu (not standalone)
+- [ ] Form has field named exactly `אימייל` (Hebrew)
+- [ ] All Hebrew field names match template exactly
 
 #### "Error Creating Your Event" Email
 
