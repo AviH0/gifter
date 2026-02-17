@@ -27,6 +27,8 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const http = require('http');
+const url = require('url');
 const { google } = require('googleapis');
 const readline = require('readline');
 
@@ -94,36 +96,116 @@ async function authorize() {
 }
 
 /**
- * Get and store new access token
+ * Get and store new access token with automatic code capture
  */
 async function getAccessToken(oAuth2Client) {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES,
-  });
-
-  console.log('Authorize this app by visiting this URL:');
-  console.log(authUrl);
-  console.log('');
-
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-
   return new Promise((resolve, reject) => {
-    rl.question('Enter the code from that page here: ', async (code) => {
-      rl.close();
+    // Start a local server to capture the OAuth callback
+    const server = http.createServer(async (req, res) => {
       try {
-        const { tokens } = await oAuth2Client.getToken(code);
-        oAuth2Client.setCredentials(tokens);
-        await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
-        console.log('Token stored to', TOKEN_PATH);
-        resolve(oAuth2Client);
+        if (req.url.indexOf('/oauth2callback') > -1) {
+          // Extract the code from the URL
+          const qs = new url.URL(req.url, 'http://localhost:3000').searchParams;
+          const code = qs.get('code');
+          
+          if (!code) {
+            res.end('Error: No authorization code received. Please try again.');
+            server.close();
+            reject(new Error('No authorization code received'));
+            return;
+          }
+
+          console.log('\n✅ Authorization code received!');
+          
+          // Send success page to browser
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8">
+                <title>Authorization Successful</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  }
+                  .container {
+                    background: white;
+                    padding: 40px;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                    text-align: center;
+                    max-width: 500px;
+                  }
+                  h1 { color: #4CAF50; margin-bottom: 20px; }
+                  p { color: #666; line-height: 1.6; }
+                  .success-icon { font-size: 64px; margin-bottom: 20px; }
+                </style>
+              </head>
+              <body>
+                <div class="container">
+                  <div class="success-icon">✅</div>
+                  <h1>Authorization Successful!</h1>
+                  <p>You can now close this window and return to the terminal.</p>
+                  <p>The form creator will continue automatically.</p>
+                </div>
+              </body>
+            </html>
+          `);
+
+          // Exchange the code for tokens
+          try {
+            const { tokens } = await oAuth2Client.getToken(code);
+            oAuth2Client.setCredentials(tokens);
+            await fs.writeFile(TOKEN_PATH, JSON.stringify(tokens));
+            console.log('✅ Token stored successfully\n');
+            
+            server.close();
+            resolve(oAuth2Client);
+          } catch (err) {
+            console.error('❌ Error exchanging code for tokens:', err.message);
+            server.close();
+            reject(err);
+          }
+        }
       } catch (err) {
-        console.error('Error retrieving access token', err);
+        console.error('❌ Error in OAuth callback:', err.message);
+        res.end('Error: ' + err.message);
+        server.close();
         reject(err);
       }
+    });
+
+    // Start the server on port 3000
+    server.listen(3000, () => {
+      const authUrl = oAuth2Client.generateAuthUrl({
+        access_type: 'offline',
+        scope: SCOPES,
+      });
+
+      console.log('\n🔐 Opening browser for authorization...');
+      console.log('\n📋 Please authorize this app by visiting this URL:');
+      console.log('\n' + authUrl + '\n');
+      console.log('💡 TIP: Copy the URL above if your browser doesn\'t open automatically\n');
+      console.log('⏳ Waiting for authorization...\n');
+
+      // Try to open the browser automatically (works on most systems)
+      const open = require('child_process').exec;
+      const command = process.platform === 'win32' ? 'start' : 
+                      process.platform === 'darwin' ? 'open' : 'xdg-open';
+      open(`${command} "${authUrl}"`);
+    });
+
+    // Fallback: if user closes terminal, clean up server
+    process.on('SIGINT', () => {
+      console.log('\n\n❌ Authorization cancelled by user');
+      server.close();
+      process.exit(1);
     });
   });
 }

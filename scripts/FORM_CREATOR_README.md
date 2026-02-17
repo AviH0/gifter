@@ -32,9 +32,11 @@ This script automatically creates a Google Form with all required Hebrew fields 
    - Click "Create Credentials" → "OAuth client ID"
    - Application type: **Desktop app**
    - Name it: "Wedding Gifts Form Creator"
-   - Click "Create"
-   - Download the credentials JSON file
-   - Save it as `credentials.json` in the `scripts/` directory
+   - **IMPORTANT:** After creation, click "DOWNLOAD JSON"
+   - **Configure redirect URI:** The downloaded JSON should have `redirect_uris` including:
+     - `http://localhost:3000/oauth2callback`
+     - If not, click "Edit" on your OAuth client and add it manually
+   - Save the downloaded file as `credentials.json` in the `scripts/` directory
 
 ### 2. Local Setup
 
@@ -82,17 +84,46 @@ npm run create-form -- --gifts=10
 
 ## First Run - Authentication Flow
 
-The first time you run the script:
+The first time you run the script, it will automatically handle OAuth:
 
-1. **Authorization URL** - The script will display a URL
-2. **Open URL** - Copy and paste it in your browser
-3. **Sign In** - Sign in with your Google account
-4. **Grant Permissions** - Allow the app to:
+1. **Local Server Starts** - Script starts a temporary server on `http://localhost:3000`
+2. **Browser Opens** - Your default browser opens automatically to Google's authorization page
+3. **Sign In** - Sign in with your Google account (the one that owns the Cloud project)
+4. **Grant Permissions** - Click "Allow" to grant the app permissions to:
    - Create and manage forms
    - Create and manage Drive files
-5. **Copy Code** - Google will display an authorization code
-6. **Paste Code** - Return to terminal and paste the code
-7. **Token Saved** - Credentials stored in `token.json` for future use
+5. **Automatic Redirect** - Google redirects to `http://localhost:3000/oauth2callback`
+6. **Code Captured** - The local server automatically captures the authorization code
+7. **Success Page** - Browser shows success message: "Authorization Successful!"
+8. **Token Saved** - Credentials stored in `token.json` for future use
+9. **Script Continues** - Form creation begins automatically
+
+**No manual code copying needed!** The entire flow is automatic.
+
+### If Browser Doesn't Open
+
+If your browser doesn't open automatically:
+1. Copy the URL from the terminal
+2. Paste it in your browser
+3. Complete the authorization
+4. The redirect will still work automatically
+
+### Troubleshooting "Unable to Connect"
+
+If you see "Unable to connect" after authorization:
+
+**Cause:** Your OAuth client doesn't have `http://localhost:3000/oauth2callback` as a redirect URI.
+
+**Fix:**
+1. Go to [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+2. Click on your OAuth 2.0 Client ID
+3. Under "Authorized redirect URIs", add:
+   ```
+   http://localhost:3000/oauth2callback
+   ```
+4. Click "Save"
+5. Delete `token.json` if it exists
+6. Run the script again
 
 **Important:** The `token.json` file contains your access token. Keep it secure and **never commit it to git**.
 
