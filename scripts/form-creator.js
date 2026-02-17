@@ -459,8 +459,14 @@ function buildFormStructure(config) {
                 choiceQuestion: {
                   type: 'RADIO',
                   options: [
-                    { value: 'כן / Yes' },
-                    { value: 'לא - סיימתי / No - I\'m done' }
+                    { 
+                      value: 'כן / Yes',
+                      goToAction: 'NEXT_SECTION'
+                    },
+                    { 
+                      value: 'לא - סיימתי / No - I\'m done',
+                      goToAction: 'SUBMIT_FORM'
+                    }
                   ],
                   shuffle: false
                 }

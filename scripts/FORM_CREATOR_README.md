@@ -332,7 +332,9 @@ The script creates a form with these fields (file uploads must be added manually
 **Key Improvements:**
 - ✅ Each gift is in its own section with page breaks for better UX
 - ✅ URLs combined into single paragraph field (one URL per line)
-- ✅ "Add another?" navigation questions between sections
+- ✅ "Add another?" navigation questions with **working conditional logic**
+  - "Yes" → Goes to next gift section
+  - "No - I'm done" → Submits the form immediately
 - ✅ Cleaner, more streamlined field names
 
 ## Troubleshooting

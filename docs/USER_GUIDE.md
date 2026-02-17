@@ -193,8 +193,10 @@ The form is organized into sections with page breaks for easier navigation. You 
 **להוסיף אמצעי תשלום נוסף?** (Add Another Payment Method?)
 *חובה (Required)* - Choose whether to add more payment options
 
-- Select "כן / Yes" to add another payment method
-- Select "לא - סיימתי / No - I'm done" to finish
+- Select "כן / Yes" to add another payment method (continues to next section)
+- Select "לא - סיימתי / No - I'm done" to finish and submit the form
+
+**Note:** The form uses smart navigation - choosing "No" will automatically submit your form without showing additional gift sections.
 
 ---
 
