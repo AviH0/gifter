@@ -322,77 +322,9 @@ function buildFormStructure(config) {
     }
   });
 
-  // 6. Wedding Image - optional file upload
-  requests.push({
-    createItem: {
-      item: {
-        title: 'תמונת האירוע',
-        description: 'תמונה ראשית לאירוע (מומלץ: 800x600 פיקסלים, JPG או PNG) - אופציונלי',
-        questionItem: {
-          question: {
-            required: false,
-            fileUploadQuestion: {
-              folderId: 'root', // Will be replaced after form creation
-              types: ['IMAGE'],
-              maxFiles: 1,
-              maxFileSize: 10485760 // 10MB
-            }
-          }
-        }
-      },
-      location: {
-        index: currentIndex++
-      }
-    }
-  });
-
-  // 7. Background Light - optional file upload
-  requests.push({
-    createItem: {
-      item: {
-        title: 'רקע בהיר',
-        description: 'תמונת רקע לעיצוב בהיר (צבעים בהירים) - אופציונלי',
-        questionItem: {
-          question: {
-            required: false,
-            fileUploadQuestion: {
-              folderId: 'root',
-              types: ['IMAGE'],
-              maxFiles: 1,
-              maxFileSize: 10485760
-            }
-          }
-        }
-      },
-      location: {
-        index: currentIndex++
-      }
-    }
-  });
-
-  // 8. Background Dark - optional file upload
-  requests.push({
-    createItem: {
-      item: {
-        title: 'רקע כהה',
-        description: 'תמונת רקע לעיצוב כהה (צבעים כהים) - אופציונלי',
-        questionItem: {
-          question: {
-            required: false,
-            fileUploadQuestion: {
-              folderId: 'root',
-              types: ['IMAGE'],
-              maxFiles: 1,
-              maxFileSize: 10485760
-            }
-          }
-        }
-      },
-      location: {
-        index: currentIndex++
-      }
-    }
-  });
+  // Note: File upload fields (תמונת האירוע, רקע בהיר, רקע כהה) 
+  // cannot be created via the API and must be added manually.
+  // See post-creation instructions for details.
 
   // 9-N. Gift fields (repeated for each gift)
   for (let i = 1; i <= config.numGifts; i++) {
@@ -574,20 +506,7 @@ async function createForm(auth, config) {
 
   console.log(`✅ Added all form fields (${formStructure.requests.length} items)`);
 
-  // Step 4: Create a folder in Drive for uploaded files
-  console.log('\n📁 Creating Drive folder for uploads...');
-  
-  const folder = await drive.files.create({
-    requestBody: {
-      name: `Wedding Gifts - Form Uploads (${formId})`,
-      mimeType: 'application/vnd.google-apps.folder'
-    },
-    fields: 'id'
-  });
-
-  console.log(`✅ Drive folder created: ${folder.data.id}`);
-
-  // Step 5: Publish the form
+  // Step 4: Publish the form
   console.log('\n🌐 Publishing form...');
   
   await forms.forms.batchUpdate({
@@ -614,8 +533,7 @@ async function createForm(auth, config) {
   return {
     formId,
     formUrl: `https://docs.google.com/forms/d/${formId}/edit`,
-    viewUrl: `https://docs.google.com/forms/d/e/${formId}/viewform`,
-    folderId: folder.data.id
+    viewUrl: `https://docs.google.com/forms/d/e/${formId}/viewform`
   };
 }
 
@@ -630,24 +548,46 @@ function displayInstructions(result, config) {
   console.log(`   Form ID: ${result.formId}`);
   console.log(`   Edit URL: ${result.formUrl}`);
   console.log(`   Public URL: ${result.viewUrl}`);
-  console.log(`   Upload Folder: ${result.folderId}`);
   console.log(`   Number of Gifts: ${config.numGifts}`);
   
-  console.log('\n📝 Next Steps:');
-  console.log('   1. Open the edit URL above to review your form');
-  console.log('   2. Copy the Apps Script code from scripts/templates/apps-script.js');
-  console.log('   3. In the form editor, click the three dots (⋮) → "Script editor"');
-  console.log('   4. Paste the Apps Script code and configure:');
+  console.log('\n⚠️  IMPORTANT: Manual Steps Required');
+  console.log('='.repeat(80));
+  console.log('\n📸 Add File Upload Fields (API Limitation):');
+  console.log('   The Google Forms API does not support creating file upload fields.');
+  console.log('   You must add these 3 fields MANUALLY in the form editor:\n');
+  console.log('   1. תמונת האירוע (Wedding Image)');
+  console.log('      - Type: File upload');
+  console.log('      - Description: "תמונה ראשית לאירוע (מומלץ: 800x600px, עד 10MB)"');
+  console.log('      - Settings: Allow only images, max 1 file, max 10MB');
+  console.log('      - Optional (not required)\n');
+  console.log('   2. רקע בהיר (Background Light)');
+  console.log('      - Type: File upload');
+  console.log('      - Description: "תמונת רקע למצב בהיר (אופקית, עד 10MB)"');
+  console.log('      - Settings: Allow only images, max 1 file, max 10MB');
+  console.log('      - Optional (not required)\n');
+  console.log('   3. רקע כהה (Background Dark)');
+  console.log('      - Type: File upload');
+  console.log('      - Description: "תמונת רקע למצב כהה (אופקית, עד 10MB)"');
+  console.log('      - Settings: Allow only images, max 1 file, max 10MB');
+  console.log('      - Optional (not required)\n');
+  console.log('   💡 TIP: Add these fields AFTER the message fields and BEFORE the gift fields');
+  
+  console.log('\n📝 Additional Setup Steps:');
+  console.log('   1. Open the edit URL above');
+  console.log('   2. Add the 3 file upload fields manually (see above)');
+  console.log('   3. Copy the Apps Script from scripts/templates/apps-script.js');
+  console.log('   4. In form editor: Three dots (⋮) → "Script editor"');
+  console.log('   5. Paste the code and configure:');
   console.log('      - GITHUB_OWNER: Your GitHub username');
   console.log('      - GITHUB_REPO: Your repository name');
-  console.log('      - GITHUB_TOKEN: Your GitHub personal access token');
+  console.log('      - GITHUB_TOKEN: Your personal access token');
   console.log('      - SENDER_EMAIL: Your Gmail address');
-  console.log('   5. Save the script (Ctrl+S)');
-  console.log('   6. Set up the form submit trigger:');
-  console.log('      - In Apps Script: Triggers (clock icon) → Add Trigger');
+  console.log('   6. Save the script (Ctrl+S)');
+  console.log('   7. Set up form trigger:');
+  console.log('      - Apps Script: Triggers (⏰) → Add Trigger');
   console.log('      - Function: onFormSubmit');
-  console.log('      - Event type: From form → On form submit');
-  console.log('   7. Test the form by submitting a response');
+  console.log('      - Event: From form → On form submit');
+  console.log('   8. Test by submitting the form');
   console.log('\n💾 Save these details for reference!');
   console.log('='.repeat(80));
 }

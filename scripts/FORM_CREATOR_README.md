@@ -5,12 +5,21 @@ This script automatically creates a Google Form with all required Hebrew fields 
 ## Features
 
 - ✅ Creates form with Hebrew field names
-- ✅ Configures all required fields (email, titles, messages, images, gifts)
-- ✅ Sets up file upload fields for images
-- ✅ Creates a dedicated Google Drive folder for uploads
+- ✅ Configures all required fields (email, titles, messages, gifts)
 - ✅ Publishes the form automatically
 - ✅ Outputs all necessary IDs and URLs
 - ✅ Customizable number of gift fields
+- ⚠️ **Note:** File upload fields must be added manually (API limitation)
+
+## API Limitation: File Uploads
+
+**Important:** The Google Forms API does not support creating file upload questions programmatically. After running this script, you must manually add 3 file upload fields:
+
+1. **תמונת האירוע** (Wedding Image)
+2. **רקע בהיר** (Background Light)
+3. **רקע כהה** (Background Dark)
+
+The script will provide detailed instructions after form creation. This takes only 2-3 minutes.
 
 ## Prerequisites
 
@@ -141,13 +150,28 @@ After successful execution, you'll receive:
    Form ID: 1a2b3c4d5e6f7g8h9i0j
    Edit URL: https://docs.google.com/forms/d/1a2b3c4d5e6f7g8h9i0j/edit
    Public URL: https://docs.google.com/forms/d/e/1a2b3c4d5e6f7g8h9i0j/viewform
-   Upload Folder: folder-id-here
    Number of Gifts: 5
 
-📝 Next Steps:
-   1. Open the edit URL above to review your form
-   2. Copy the Apps Script code from scripts/templates/apps-script.js
-   ...
+⚠️  IMPORTANT: Manual Steps Required
+================================================================================
+
+📸 Add File Upload Fields (API Limitation):
+   The Google Forms API does not support creating file upload fields.
+   You must add these 3 fields MANUALLY in the form editor:
+
+   1. תמונת האירוע (Wedding Image)
+      - Type: File upload
+      - Description: "תמונה ראשית לאירוע (מומלץ: 800x600px, עד 10MB)"
+      - Settings: Allow only images, max 1 file, max 10MB
+      - Optional (not required)
+
+   2. רקע בהיר (Background Light)
+      - Type: File upload
+      ...
+
+   3. רקע כהה (Background Dark)
+      - Type: File upload
+      ...
 ```
 
 ### Saved File
@@ -158,14 +182,47 @@ Details are also saved to `form-info.json`:
 {
   "formId": "1a2b3c4d5e6f7g8h9i0j",
   "formUrl": "https://docs.google.com/forms/d/.../edit",
-  "viewUrl": "https://docs.google.com/forms/d/e/.../viewform",
-  "folderId": "folder-id-here"
+  "viewUrl": "https://docs.google.com/forms/d/e/.../viewform"
 }
 ```
 
 ## Next Steps After Form Creation
 
-### 1. Review the Form
+### 1. Add File Upload Fields (Required - 2-3 minutes)
+
+Open the form edit URL and add these 3 fields manually:
+
+**Field 1: תמונת האירוע**
+- Click the "+" button to add a new question
+- Change type to "File upload"
+- Title: `תמונת האירוע`
+- Description: `תמונה ראשית לאירוע (מומלץ: 800x600 פיקסלים, עד 10MB)`
+- Click "File upload settings"
+  - Allow: "Specific file types" → Images only
+  - Maximum number of files: 1
+  - Maximum file size: 10 MB
+- Make it optional (toggle "Required" off)
+- Position: After the message fields, before gift fields
+
+**Field 2: רקע בהיר**
+- Add another question
+- Type: File upload
+- Title: `רקע בהיר`
+- Description: `תמונת רקע למצב בהיר (אופקית, עד 10MB)`
+- Same upload settings as above
+- Optional
+
+**Field 3: רקע כהה**
+- Add another question
+- Type: File upload
+- Title: `רקע כהה`
+- Description: `תמונת רקע למצב כהה (אופקית, עד 10MB)`
+- Same upload settings as above
+- Optional
+
+**💡 Pro Tip:** These field names MUST match exactly for the Apps Script to work.
+
+### 2. Review the Form
 
 Open the edit URL and verify all fields are correct:
 - ✅ Email field
@@ -235,7 +292,7 @@ Open the edit URL and verify all fields are correct:
 
 ## Created Form Structure
 
-The script creates a form with these fields:
+The script creates a form with these fields (file uploads must be added manually):
 
 | Field Name | Type | Required | Description |
 |------------|------|----------|-------------|
@@ -244,9 +301,9 @@ The script creates a form with these fields:
 | כותרת האירוע (עברית) | Text | ❌ No | Event title (Hebrew) |
 | הודעה לאורחים (אנגלית) | Paragraph | ✅ Yes | Guest message (English) |
 | הודעה לאורחים (עברית) | Paragraph | ❌ No | Guest message (Hebrew) |
-| תמונת האירוע | File Upload | ❌ No | Main event image |
-| רקע בהיר | File Upload | ❌ No | Light theme background |
-| רקע כהה | File Upload | ❌ No | Dark theme background |
+| **תמונת האירוע** | **File Upload** | **❌ No** | **⚠️ Add manually** |
+| **רקע בהיר** | **File Upload** | **❌ No** | **⚠️ Add manually** |
+| **רקע כהה** | **File Upload** | **❌ No** | **⚠️ Add manually** |
 | מתנה 1 - שם (אנגלית) | Text | ✅ Yes | Gift 1 name (English) |
 | מתנה 1 - שם (עברית) | Text | ❌ No | Gift 1 name (Hebrew) |
 | מתנה 1 - קישור 1 | Text | ✅ Yes | Gift 1 URL 1 |
