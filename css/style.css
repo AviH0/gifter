@@ -292,6 +292,12 @@ h1 {
     text-align: center;
 }
 
+@media (max-width: 768px) {
+    .demo-main {
+        padding: 40px 15px;
+    }
+}
+
 .demo-title {
     font-size: 48px;
     margin-bottom: 20px;
@@ -406,15 +412,32 @@ h1 {
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+    .demo-title {
+        font-size: 32px;
+    }
+    
+    .demo-subtitle {
+        font-size: 18px;
+    }
+    
+    .demo-cta {
+        padding: 30px 20px;
+    }
+    
     .demo-buttons {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
     }
     
     .demo-btn-primary,
     .demo-btn-secondary {
         width: 100%;
+        box-sizing: border-box;
         text-align: center;
+        padding: 12px 20px;
+        font-size: 16px;
+        white-space: normal; /* Allow text wrapping on mobile */
     }
 }
 
