@@ -240,7 +240,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Set background (with decryption if needed)
     const updateBackground = async () => {
         const isDark = document.body.classList.contains('dark');
-        const bgImagePath = isDark ? config.backgroundDark : config.backgroundLight;
+        let bgImagePath = isDark ? config.backgroundDark : config.backgroundLight;
+        
+        // Fallback to default backgrounds if not specified
+        if (!bgImagePath) {
+            bgImagePath = isDark ? 'assets/bg-dark.png' : 'assets/bg-light.png';
+        }
         
         if (bgImagePath) {
             let bgUrl;

@@ -34,7 +34,8 @@
  * 
  * NOTES:
  * - Apps Script doesn't have CryptoJS built-in, so we use a compatible AES implementation
- * - This script handles both new events and updates (same email = update)
+ * - This script handles both new events and updates using FormResponse ID tracking
+ * - FormResponse ID is stable across edits, allowing users to change email safely
  * - Images are optimized to <500KB automatically
  * - All configs are encrypted before committing to GitHub
  * 
@@ -85,6 +86,15 @@ function onFormSubmit(e) {
     
     Logger.log('Response fields: ' + Object.keys(responses).join(', '));
     
+    // Get FormResponse ID to track edits
+    let responseId = null;
+    if (e.response && typeof e.response.getId === 'function') {
+      responseId = e.response.getId();
+      Logger.log('FormResponse ID: ' + responseId);
+    } else {
+      Logger.log('WARNING: Could not get FormResponse ID. Edit tracking will not work.');
+    }
+    
     // Get email - try both Hebrew and English field names
     let email;
     if (responses['אימייל'] && responses['אימייל'][0]) {
@@ -97,8 +107,8 @@ function onFormSubmit(e) {
     
     Logger.log('Email: ' + email);
     
-    // Check if this email already has an event
-    const existing = getEventByEmail(email);
+    // Check if this response ID already has an event (for edits)
+    const existing = responseId ? getEventByResponseId(responseId) : null;
     const uuid = existing ? existing.uuid : generateUUID();
     const key = existing ? existing.key : generateEncryptionKey();
     
@@ -134,10 +144,13 @@ function onFormSubmit(e) {
     
     Logger.log('Committed to GitHub');
     
-    // Update registry
-    updateRegistry(email, uuid, key, !!existing);
-    
-    Logger.log('Registry updated');
+    // Update registry (only if responseId is available)
+    if (responseId) {
+      updateRegistry(responseId, email, uuid, key, !!existing);
+      Logger.log('Registry updated');
+    } else {
+      Logger.log('WARNING: Skipping registry update - no responseId available');
+    }
     
     // Send email to user
     sendEventURL(email, uuid, key, !!existing);
@@ -904,13 +917,78 @@ function getEventByEmail(email) {
 }
 
 /**
+ * Get event info by FormResponse ID from registry
+ * @param {string} responseId - FormResponse ID
+ * @return {Object|null} Object with uuid, key, and email, or null if not found
+ */
+function getEventByResponseId(responseId) {
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const masterKey = props.getProperty('MASTER_KEY');
+    const repo = props.getProperty('GITHUB_REPO');
+    const branch = props.getProperty('GITHUB_BRANCH') || 'main';
+    const token = props.getProperty('GITHUB_TOKEN');
+    
+    if (!masterKey || !repo || !token) {
+      return null;
+    }
+    
+    // Fetch registry from GitHub
+    const url = 'https://api.github.com/repos/' + repo + '/contents/public/events/_registry.enc?ref=' + branch;
+    const headers = {
+      'Authorization': 'token ' + token,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+    
+    const response = UrlFetchApp.fetch(url, {
+      method: 'get',
+      headers: headers,
+      muteHttpExceptions: true
+    });
+    
+    if (response.getResponseCode() !== 200) {
+      Logger.log('Registry not found (may not exist yet)');
+      return null;
+    }
+    
+    const fileData = JSON.parse(response.getContentText());
+    const encryptedRegistry = Utilities.newBlob(
+      Utilities.base64Decode(fileData.content)
+    ).getDataAsString();
+    
+    // Decrypt registry
+    const registryJson = decryptAES(encryptedRegistry, masterKey);
+    
+    // Try to parse JSON - if it fails, registry is corrupted (old encryption)
+    let registry;
+    try {
+      registry = JSON.parse(registryJson);
+    } catch (parseErr) {
+      Logger.log('Registry file corrupted (encrypted with old code). Will be recreated on next update.');
+      Logger.log('Decryption produced: ' + registryJson.substring(0, 50) + '...');
+      return null;
+    }
+    
+    if (registry[responseId]) {
+      return registry[responseId];
+    }
+    
+    return null;
+  } catch (err) {
+    Logger.log('Error getting event by responseId: ' + err.toString());
+    return null;
+  }
+}
+
+/**
  * Update registry with new or updated event
+ * @param {string} responseId - FormResponse ID (primary key)
  * @param {string} email - User email
  * @param {string} uuid - Event UUID
  * @param {string} key - Encryption key
  * @param {boolean} isUpdate - Whether this is an update
  */
-function updateRegistry(email, uuid, key, isUpdate) {
+function updateRegistry(responseId, email, uuid, key, isUpdate) {
   const props = PropertiesService.getScriptProperties();
   const masterKey = props.getProperty('MASTER_KEY');
   const repo = props.getProperty('GITHUB_REPO');
@@ -958,11 +1036,12 @@ function updateRegistry(email, uuid, key, isUpdate) {
     Logger.log('Could not fetch existing registry: ' + err.toString());
   }
   
-  // Update registry
-  registry[email] = {
+  // Update registry - use responseId as key, store email in value
+  registry[responseId] = {
     uuid: uuid,
     key: key,
-    created: registry[email] ? registry[email].created : new Date().toISOString(),
+    email: email,
+    created: registry[responseId] ? registry[responseId].created : new Date().toISOString(),
     updated: new Date().toISOString()
   };
   
@@ -985,7 +1064,7 @@ function updateRegistry(email, uuid, key, isUpdate) {
     registrySha // Pass SHA directly (or null for new file)
   );
   
-  Logger.log('Registry updated for: ' + email);
+  Logger.log('Registry updated for responseId: ' + responseId + ' (email: ' + email + ')');
 }
 
 /**
