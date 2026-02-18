@@ -722,8 +722,10 @@ function commitFile(url, content, message, branch, headers, isUpdateOrSha) {
   if (typeof isUpdateOrSha === 'string') {
     // SHA provided directly
     payload.sha = isUpdateOrSha;
+    Logger.log('Using provided SHA: ' + payload.sha.substring(0, 8) + '...');
   } else if (isUpdateOrSha === true) {
     // Fetch SHA
+    Logger.log('Fetching SHA for: ' + url);
     try {
       const response = UrlFetchApp.fetch(url, {
         method: 'get',
@@ -731,12 +733,23 @@ function commitFile(url, content, message, branch, headers, isUpdateOrSha) {
         muteHttpExceptions: true
       });
       
-      if (response.getResponseCode() === 200) {
+      const responseCode = response.getResponseCode();
+      Logger.log('GET response code: ' + responseCode);
+      
+      if (responseCode === 200) {
         const fileData = JSON.parse(response.getContentText());
         payload.sha = fileData.sha;
+        Logger.log('Fetched SHA for update: ' + payload.sha.substring(0, 8) + '...');
+      } else if (responseCode === 404) {
+        Logger.log('File does not exist yet (404), creating new file without SHA');
+        // File doesn't exist, so treat as new file (no SHA needed)
+      } else {
+        Logger.log('Warning: Unexpected status ' + responseCode + ', will attempt without SHA');
+        Logger.log('Response: ' + response.getContentText().substring(0, 200));
       }
     } catch (err) {
-      Logger.log('Could not get SHA (file may not exist): ' + err.toString());
+      Logger.log('Warning: Exception fetching SHA: ' + err.toString());
+      Logger.log('Will attempt to create/update without SHA');
     }
   }
   // If isUpdateOrSha is false or undefined, create new file (no SHA needed)
@@ -785,6 +798,7 @@ function commitBinaryFile(url, binaryData, message, branch, headers, isUpdate) {
   
   // If updating, get current file SHA
   if (isUpdate) {
+    Logger.log('Fetching SHA for binary file: ' + url);
     try {
       const response = UrlFetchApp.fetch(url, {
         method: 'get',
@@ -792,12 +806,21 @@ function commitBinaryFile(url, binaryData, message, branch, headers, isUpdate) {
         muteHttpExceptions: true
       });
       
-      if (response.getResponseCode() === 200) {
+      const responseCode = response.getResponseCode();
+      Logger.log('Binary GET response code: ' + responseCode);
+      
+      if (responseCode === 200) {
         const fileData = JSON.parse(response.getContentText());
         payload.sha = fileData.sha;
+        Logger.log('Fetched SHA for binary update: ' + payload.sha.substring(0, 8) + '...');
+      } else if (responseCode === 404) {
+        Logger.log('Binary file does not exist yet (404), creating new file without SHA');
+        // File doesn't exist, so treat as new file (no SHA needed)
+      } else {
+        Logger.log('Warning: Unexpected binary status ' + responseCode + ', will attempt without SHA');
       }
     } catch (err) {
-      Logger.log('Could not get SHA (file may not exist): ' + err.toString());
+      Logger.log('Warning: Exception fetching binary SHA: ' + err.toString());
     }
   }
   
