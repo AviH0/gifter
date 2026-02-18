@@ -724,10 +724,11 @@ function commitFile(url, content, message, branch, headers, isUpdateOrSha) {
     payload.sha = isUpdateOrSha;
     Logger.log('Using provided SHA: ' + payload.sha.substring(0, 8) + '...');
   } else if (isUpdateOrSha === true) {
-    // Fetch SHA
-    Logger.log('Fetching SHA for: ' + url);
+    // Fetch SHA - must include branch parameter
+    const fetchUrl = url + '?ref=' + branch;
+    Logger.log('Fetching SHA for: ' + fetchUrl);
     try {
-      const response = UrlFetchApp.fetch(url, {
+      const response = UrlFetchApp.fetch(fetchUrl, {
         method: 'get',
         headers: headers,
         muteHttpExceptions: true
@@ -798,9 +799,10 @@ function commitBinaryFile(url, binaryData, message, branch, headers, isUpdate) {
   
   // If updating, get current file SHA
   if (isUpdate) {
-    Logger.log('Fetching SHA for binary file: ' + url);
+    const fetchUrl = url + '?ref=' + branch;
+    Logger.log('Fetching SHA for binary file: ' + fetchUrl);
     try {
-      const response = UrlFetchApp.fetch(url, {
+      const response = UrlFetchApp.fetch(fetchUrl, {
         method: 'get',
         headers: headers,
         muteHttpExceptions: true
