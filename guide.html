@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מדריך למשתמש - User Guide</title>
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --text-color: #333;
+            --bg-color: #ffffff;
+            --card-bg: #f8f9fa;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        [lang="he"] {
+            font-family: 'Noto Sans Hebrew', sans-serif;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s;
+        }
+
+        .lang-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .section h3 {
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .step {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        [dir="rtl"] .step {
+            border-left: none;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        [dir="rtl"] .step-number {
+            margin-left: 0;
+            margin-right: 10px;
+        }
+
+        .step h4 {
+            display: inline;
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+
+        .step p {
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .note strong {
+            color: #856404;
+        }
+
+        .tip {
+            background: #d1ecf1;
+            border: 1px solid #17a2b8;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .tip strong {
+            color: #0c5460;
+        }
+
+        .button-demo {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+
+        .button-demo:hover {
+            transform: translateY(-2px);
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-right: 20px;
+        }
+
+        [dir="ltr"] ul {
+            padding-right: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: transform 0.2s;
+        }
+
+        .back-link:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            header p {
+                font-size: 1em;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .section h3 {
+                font-size: 1.2em;
+            }
+
+            .lang-toggle {
+                top: 10px;
+                left: 10px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="lang-toggle" onclick="toggleLanguage()">English</button>
+    
+    <div class="container">
+        <header>
+            <h1>🎁 מדריך למשתמש</h1>
+            <p>כל מה שצריך לדעת כדי ליצור ולשתף את דף המתנות שלכם</p>
+        </header>
+
+        <div class="content">
+            <!-- Hebrew Section -->
+            <div id="hebrew-section" class="section">
+                <h2>📝 איך יוצרים דף אירוע?</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h4>מלאו את הטופס</h4>
+                    <p>היכנסו לטופס Google Forms (הקישור נמצא בעמוד הראשי) ומלאו את כל הפרטים:</p>
+                    <ul>
+                        <li><strong>אימייל:</strong> כתובת המייל שלכם (לקבלת הקישור)</li>
+                        <li><strong>כותרת האירוע:</strong> שם האירוע בעברית ובאנגלית (לדוגמה: "החתונה של דני ומיכל")</li>
+                        <li><strong>הודעה לאורחים:</strong> טקסט קצר לאורחים בעברית ובאנגלית</li>
+                        <li><strong>תמונות (אופציונלי):</strong> תמונת האירוע, רקע בהיר, רקע כהה</li>
+                        <li><strong>אמצעי תשלום:</strong> שם האמצעי (ביט, פייבוקס וכו'), קישורים לתשלום, ולוגו</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <strong>💡 טיפ:</strong> אפשר להוסיף עד 10 אמצעי תשלום שונים!
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h4>הוסיפו מספר קישורים לכל אמצעי תשלום</h4>
+                    <p>זו התכונה הייחודית של המערכת! במקום קישור אחד, תוכלו להוסיף מספר קישורים לאותו אמצעי תשלום:</p>
+                    <ul>
+                        <li>כל קישור בשורה נפרדת בשדה "קישורי תשלום"</li>
+                        <li>המערכת תחלק את האורחים אוטומטית בין הקישורים</li>
+                        <li>כל אורח יקבל קישור אקראי - כך העומס יתפזר בין כל החשבונות</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>🎯 למה זה שימושי?</strong> אם יש לכם כמה חשבונות ביט או פייבוקס, האורחים יחולקו ביניהם אוטומטית ולא תצטרכו לשלוח קישורים שונים ידנית!
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h4>שלחו את הטופס</h4>
+                    <p>לאחר מילוי כל הפרטים, לחצו על "שליחה". תוך דקות ספורות תקבלו למייל:</p>
+                    <ul>
+                        <li>קישור ייחודי לדף המתנות שלכם</li>
+                        <li>הקישור כולל מפתח הצפנה בסוף (#), אז שמרו אותו טוב!</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <strong>⚠️ חשוב:</strong> אם תרצו לערוך את הפרטים בעתיד, פשוט לחצו על "ערוך תגובה" בטופס המקורי ושלחו שוב. הקישור יישאר זהה!
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔗 איך משתפים את הדף עם אורחים?</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h4>פתחו את דף האירוע שלכם</h4>
+                    <p>השתמשו בקישור שקיבלתם במייל. הדף יטען עם כל הפרטים שהזנתם.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h4>לחצו על כפתור ה-QR 🔗</h4>
+                    <p>בחלק העליון של הדף תמצאו כפתור עם אייקון 🔗. לחיצה עליו תפתח חלון עם קוד QR.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h4>הורידו או שתפו את הקוד</h4>
+                    <p>יש לכם מספר אפשרויות:</p>
+                    <ul>
+                        <li><strong>הורידו את קוד ה-QR:</strong> לחצו על "הורד QR" כדי לשמור את התמונה</li>
+                        <li><strong>הדפיסו:</strong> הדפיסו את הקוד והוסיפו אותו להזמנות</li>
+                        <li><strong>שתפו ישירות:</strong> העתיקו את הקישור ושלחו אותו בהודעה או במייל</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 רעיונות לשימוש:</strong>
+                    <ul>
+                        <li>הוסיפו את קוד ה-QR להזמנה הדיגיטלית</li>
+                        <li>הדפיסו והציבו ליד שולחן המתנות</li>
+                        <li>שלחו את הקישור בקבוצת ווטסאפ של האירוע</li>
+                        <li>הוסיפו לאתר החתונה שלכם</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ תכונות נוספות</h2>
+                
+                <h3>🌓 מצב כהה/בהיר</h3>
+                <p>האורחים יכולים להחליף בין מצב בהיר לכהה לפי העדפה. לחצו על הכפתור "מצב כהה" בחלק העליון.</p>
+
+                <h3>🌐 עברית/אנגלית</h3>
+                <p>הדף תומך בשני השפות. אורחים יכולים להחליף שפה בלחיצה על כפתור "English" או "עברית".</p>
+
+                <h3>📤 שיתוף אמצעי תשלום בודד</h3>
+                <p>כל אמצעי תשלום בדף יש לו כפתור "שיתוף" משלו. אפשר:</p>
+                <ul>
+                    <li>להעתיק את הקישור</li>
+                    <li>לשתף באפליקציות אחרות</li>
+                    <li>להציג קוד QR ספציפי לאמצעי זה</li>
+                </ul>
+            </div>
+
+            <a href="index.html" class="back-link">← חזרה לעמוד הראשי</a>
+        </div>
+    </div>
+
+    <!-- English Section (Hidden by default) -->
+    <div class="container" id="english-section" style="display: none; margin-top: 20px;">
+        <header>
+            <h1>🎁 User Guide</h1>
+            <p>Everything you need to know to create and share your gift page</p>
+        </header>
+
+        <div class="content">
+            <div class="section">
+                <h2>📝 How to Create an Event Page?</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h4>Fill Out the Form</h4>
+                    <p>Go to the Google Form (link on the main page) and fill in all the details:</p>
+                    <ul>
+                        <li><strong>Email:</strong> Your email address (to receive the link)</li>
+                        <li><strong>Event Title:</strong> Event name in Hebrew and English (e.g., "Danny & Michal's Wedding")</li>
+                        <li><strong>Guest Message:</strong> Short text for guests in Hebrew and English</li>
+                        <li><strong>Images (Optional):</strong> Event photo, light background, dark background</li>
+                        <li><strong>Payment Methods:</strong> Platform name (Bit, PayBox, etc.), payment links, and logo</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <strong>💡 Tip:</strong> You can add up to 10 different payment methods!
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h4>Add Multiple Links Per Payment Method</h4>
+                    <p>This is the unique feature of the system! Instead of one link, you can add multiple links for the same payment platform:</p>
+                    <ul>
+                        <li>Each link on a separate line in the "Payment Links" field</li>
+                        <li>The system automatically distributes guests between the links</li>
+                        <li>Each guest gets a random link - spreading the load across all accounts</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>🎯 Why is this useful?</strong> If you have multiple Bit or PayBox accounts, guests are automatically distributed between them, and you don't need to manually send different links!
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h4>Submit the Form</h4>
+                    <p>After filling in all details, click "Submit". Within minutes, you'll receive via email:</p>
+                    <ul>
+                        <li>A unique link to your gift page</li>
+                        <li>The link includes an encryption key at the end (#), so keep it safe!</li>
+                    </ul>
+                </div>
+
+                <div class="note">
+                    <strong>⚠️ Important:</strong> If you want to edit the details in the future, simply click "Edit response" in the original form and submit again. The link will remain the same!
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔗 How to Share the Page with Guests?</h2>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h4>Open Your Event Page</h4>
+                    <p>Use the link you received via email. The page will load with all the details you entered.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h4>Click the QR Button 🔗</h4>
+                    <p>At the top of the page, you'll find a button with the 🔗 icon. Clicking it opens a window with a QR code.</p>
+                </div>
+
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h4>Download or Share the Code</h4>
+                    <p>You have several options:</p>
+                    <ul>
+                        <li><strong>Download the QR code:</strong> Click "Download QR" to save the image</li>
+                        <li><strong>Print:</strong> Print the code and add it to invitations</li>
+                        <li><strong>Share directly:</strong> Copy the link and send it via message or email</li>
+                    </ul>
+                </div>
+
+                <div class="tip">
+                    <strong>💡 Usage Ideas:</strong>
+                    <ul>
+                        <li>Add the QR code to digital invitations</li>
+                        <li>Print and place next to the gift table</li>
+                        <li>Send the link in the event's WhatsApp group</li>
+                        <li>Add to your wedding website</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Additional Features</h2>
+                
+                <h3>🌓 Dark/Light Mode</h3>
+                <p>Guests can switch between light and dark mode based on preference. Click the "Dark Mode" button at the top.</p>
+
+                <h3>🌐 Hebrew/English</h3>
+                <p>The page supports both languages. Guests can switch language by clicking the "English" or "עברית" button.</p>
+
+                <h3>📤 Share Individual Payment Method</h3>
+                <p>Each payment method on the page has its own "Share" button. You can:</p>
+                <ul>
+                    <li>Copy the link</li>
+                    <li>Share to other apps</li>
+                    <li>Display a QR code specific to this method</li>
+                </ul>
+            </div>
+
+            <a href="index.html" class="back-link">← Back to Main Page</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleLanguage() {
+            const hebrewSection = document.getElementById('hebrew-section').closest('.container');
+            const englishSection = document.getElementById('english-section');
+            const button = document.querySelector('.lang-toggle');
+            const html = document.documentElement;
+
+            if (hebrewSection.style.display === 'none') {
+                // Show Hebrew, hide English
+                hebrewSection.style.display = 'block';
+                englishSection.style.display = 'none';
+                button.textContent = 'English';
+                html.setAttribute('lang', 'he');
+                html.setAttribute('dir', 'rtl');
+            } else {
+                // Show English, hide Hebrew
+                hebrewSection.style.display = 'none';
+                englishSection.style.display = 'block';
+                button.textContent = 'עברית';
+                html.setAttribute('lang', 'en');
+                html.setAttribute('dir', 'ltr');
+            }
+        }
+    </script>
+</body>
+</html>

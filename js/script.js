@@ -39,8 +39,24 @@ function showDemo() {
     if (demoLangBtn) {
         demoLangBtn.textContent = lang === 'en' ? 'עברית' : 'English';
         demoLangBtn.onclick = () => {
-            const newLang = lang === 'en' ? '' : 'en/';
-            window.location.href = window.location.origin + window.location.pathname.replace(/^\/[^\/]*\//, '/' + newLang);
+            const currentPath = window.location.pathname;
+            const search = window.location.search; // Preserve query params
+            const hash = window.location.hash; // Preserve hash
+            
+            let newPath;
+            if (lang === 'en') {
+                // Going from English to Hebrew - remove /en/
+                newPath = currentPath.replace(/\/en\/index\.html$/, '/index.html').replace(/\/en\/$/, '/');
+            } else {
+                // Going from Hebrew to English - add /en/
+                newPath = currentPath.replace(/\/index\.html$/, '/en/index.html').replace(/\/$/, '/en/index.html');
+                if (!newPath.includes('/en/')) {
+                    // Fallback: just add en/ before index.html
+                    newPath = currentPath.replace('index.html', 'en/index.html');
+                }
+            }
+            
+            window.location.href = window.location.origin + newPath + search + hash;
         };
     }
     
@@ -61,7 +77,7 @@ function showDemo() {
         const demoButtons = document.querySelectorAll('.demo-buttons a');
         if (demoButtons[0]) demoButtons[0].textContent = 'Create New Event';
         if (demoButtons[1]) demoButtons[1].textContent = 'View Demo Page';
-        if (demoButtons[2]) demoButtons[2].textContent = 'Learn More';
+        if (demoButtons[2]) demoButtons[2].textContent = 'User Guide';
     }
 }
 
