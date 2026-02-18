@@ -22,7 +22,7 @@
         "en": "Bit"
       },
       "url": "https://bit.ly/demo-gift",
-      "logo": "assets/bit.png",
+      "logo": "https://play-lh.googleusercontent.com/SovCyuQk4A0se4hmrQbf1OJXznHlfseeq9YtPh_WHe3lVMFzZcXqBGfW2J_1yYI6yQ=w240-h480-rw",
       "qr": true
     },
     {
@@ -31,29 +31,8 @@
         "en": "PayBox"
       },
       "url": "https://payboxapp.page.link/demo",
-      "logo": "assets/paybox.png",
+      "logo": "https://yt3.googleusercontent.com/ytc/AIdro_lhy54u_HxaHGFBzqnJbd6oh7cVzfpbDdxBsCFn4ohvlss=s900-c-k-c0x00ffffff-no-rj",
       "qr": true
-    },
-    {
-      "name": {
-        "he": "פייפל",
-        "en": "PayPal"
-      },
-      "url": "https://paypal.me/demo",
-      "logo": "assets/paypal.png",
-      "qr": true
-    },
-    {
-      "name": {
-        "he": "העברה בנקאית",
-        "en": "Bank Transfer"
-      },
-      "url": [
-        "https://example.com/bank1",
-        "https://example.com/bank2"
-      ],
-      "logo": "assets/bank.png",
-      "qr": false
     }
   ]
 }
