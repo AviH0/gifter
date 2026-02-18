@@ -72,7 +72,8 @@ main {
     max-width: 400px;
     width: 100%;
     height: auto;
-    margin: 20px 0;
+    margin: 20px auto;
+    display: block;
     border: 2px solid #ccc;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -358,6 +359,13 @@ h1 {
     opacity: 0.9;
 }
 
+.demo-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 .demo-btn-primary {
     display: inline-block;
     background: white;
@@ -373,6 +381,24 @@ h1 {
 .demo-btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.demo-btn-secondary {
+    display: inline-block;
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 15px 40px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    transition: transform 0.3s, background 0.3s;
+}
+
+.demo-btn-secondary:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* English version adjustments */

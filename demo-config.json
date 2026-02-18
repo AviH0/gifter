@@ -1,0 +1,59 @@
+{
+  "eventId": "demo",
+  "title": {
+    "he": "החתונה של יעל ודניאל",
+    "en": "Yael & Daniel's Wedding"
+  },
+  "message": {
+    "he": "אנחנו שמחים להזמין אתכם לחגוג איתנו! אם תרצו לשלוח מתנה, נשמח מאוד 💝",
+    "en": "We're excited to celebrate with you! If you'd like to send a gift, we'd be delighted 💝"
+  },
+  "image": "assets/demo-wedding.jpg",
+  "backgroundLight": "",
+  "backgroundDark": "",
+  "fonts": {
+    "primary": "Noto Sans Hebrew, sans-serif",
+    "secondary": "Montserrat, sans-serif"
+  },
+  "gifts": [
+    {
+      "name": {
+        "he": "ביט",
+        "en": "Bit"
+      },
+      "url": "https://bit.ly/demo-gift",
+      "logo": "assets/bit.png",
+      "qr": true
+    },
+    {
+      "name": {
+        "he": "פייבוקס",
+        "en": "PayBox"
+      },
+      "url": "https://payboxapp.page.link/demo",
+      "logo": "assets/paybox.png",
+      "qr": true
+    },
+    {
+      "name": {
+        "he": "פייפל",
+        "en": "PayPal"
+      },
+      "url": "https://paypal.me/demo",
+      "logo": "assets/paypal.png",
+      "qr": true
+    },
+    {
+      "name": {
+        "he": "העברה בנקאית",
+        "en": "Bank Transfer"
+      },
+      "url": [
+        "https://example.com/bank1",
+        "https://example.com/bank2"
+      ],
+      "logo": "assets/bank.png",
+      "qr": false
+    }
+  ]
+}

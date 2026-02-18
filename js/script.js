@@ -61,7 +61,10 @@ function showDemo() {
         
         document.querySelector('.demo-cta h2').textContent = 'Want to create your own event?';
         document.querySelector('.demo-cta p').textContent = 'Contact the system administrator to get a link to the event creation form';
-        document.querySelector('.demo-btn-primary').textContent = 'Learn More on GitHub';
+        
+        const demoButtons = document.querySelectorAll('.demo-buttons a');
+        if (demoButtons[0]) demoButtons[0].textContent = 'View Demo Page';
+        if (demoButtons[1]) demoButtons[1].textContent = 'Learn More on GitHub';
     }
 }
 
@@ -70,7 +73,24 @@ async function loadConfig() {
     const eventId = new URLSearchParams(window.location.search).get('event');
     const key = window.location.hash.substring(1);
     
-    // If no event ID, show demo page
+    // Check if loading demo event
+    if (eventId === 'demo') {
+        updateProgress(10, lang === 'en' ? 'Loading demo...' : 'טוען הדגמה...');
+        try {
+            const response = await fetch('demo-config.json');
+            if (!response.ok) throw new Error('Demo config not found');
+            updateProgress(50, lang === 'en' ? 'Loading demo...' : 'טוען הדגמה...');
+            const config = await response.json();
+            updateProgress(100, lang === 'en' ? 'Done!' : 'הושלם!');
+            return config;
+        } catch (err) {
+            console.error('Failed to load demo:', err);
+            showDemo();
+            return null;
+        }
+    }
+    
+    // If no event ID, show landing page
     if (!eventId || !key) {
         showDemo();
         return null;
