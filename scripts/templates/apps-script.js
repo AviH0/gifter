@@ -529,7 +529,7 @@ function encryptAES(plaintext, passphrase) {
  * Encrypt binary data (for images)
  * @param {number[]} binaryData - Array of bytes from image
  * @param {string} passphrase - Encryption key
- * @return {number[]} Encrypted binary array (NOT base64)
+ * @return {string} Encrypted binary as base64 string
  */
 function encryptBinary(binaryData, passphrase) {
   try {
@@ -552,7 +552,10 @@ function encryptBinary(binaryData, passphrase) {
     
     // Format: "Salted__" + salt (8 bytes) + encrypted data
     const header = [83, 97, 108, 116, 101, 100, 95, 95]; // "Salted__"
-    return header.concat(salt, encrypted);
+    const fullData = header.concat(salt, encrypted);
+    
+    // Return as base64 string (consistent with encryptAES)
+    return Utilities.base64Encode(fullData);
   } catch (error) {
     Logger.log('Binary encryption error: ' + error.toString());
     // Return unencrypted data as fallback
@@ -774,26 +777,16 @@ function commitFile(url, content, message, branch, headers, isUpdateOrSha) {
 /**
  * Commit a binary file to GitHub
  * @param {string} url - GitHub API URL
- * @param {number[]|Blob} binaryData - Encrypted byte array or Blob
+ * @param {string} base64Data - Encrypted binary data as base64 string (from encryptBinary)
  * @param {string} message - Commit message
  * @param {string} branch - Branch name
  * @param {Object} headers - Request headers
  * @param {boolean} isUpdate - Whether this is an update (requires SHA)
  */
-function commitBinaryFile(url, binaryData, message, branch, headers, isUpdate) {
-  // Handle both byte arrays and Blobs
-  let bytes;
-  if (Array.isArray(binaryData)) {
-    bytes = binaryData; // Already a byte array from encryptBinary()
-  } else if (binaryData.getBytes) {
-    bytes = binaryData.getBytes(); // Blob object
-  } else {
-    throw new Error('Invalid binary data type');
-  }
-  
+function commitBinaryFile(url, base64Data, message, branch, headers, isUpdate) {
   const payload = {
     message: message,
-    content: Utilities.base64Encode(bytes),
+    content: Utilities.base64Encode(base64Data), // Double-encode like commitFile
     branch: branch
   };
   
