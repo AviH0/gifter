@@ -60,11 +60,12 @@ function showDemo() {
         features[3].querySelector('p').textContent = 'Works great on desktop, tablet and smartphone';
         
         document.querySelector('.demo-cta h2').textContent = 'Want to create your own event?';
-        document.querySelector('.demo-cta p').textContent = 'Contact the system administrator to get a link to the event creation form';
+        document.querySelector('.demo-cta p').textContent = 'Fill out the form and receive your gift page link within minutes!';
         
         const demoButtons = document.querySelectorAll('.demo-buttons a');
-        if (demoButtons[0]) demoButtons[0].textContent = 'View Demo Page';
-        if (demoButtons[1]) demoButtons[1].textContent = 'Learn More on GitHub';
+        if (demoButtons[0]) demoButtons[0].textContent = 'Create New Event';
+        if (demoButtons[1]) demoButtons[1].textContent = 'View Demo Page';
+        if (demoButtons[2]) demoButtons[2].textContent = 'Learn More';
     }
 }
 
