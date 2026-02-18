@@ -47,17 +47,13 @@ function showDemo() {
     // Translate demo page if English
     if (lang === 'en') {
         document.querySelector('.demo-title').textContent = '🎁 Event Gift System';
-        document.querySelector('.demo-subtitle').textContent = 'Create an encrypted and secure gift page for your event';
+        document.querySelector('.demo-subtitle').textContent = 'Create a custom gift page for your event';
         
         const features = document.querySelectorAll('.demo-feature');
-        features[0].querySelector('h3').textContent = 'Encrypted & Secure';
-        features[0].querySelector('p').textContent = 'All data is encrypted and stored securely on GitHub';
-        features[1].querySelector('h3').textContent = 'Custom Design';
-        features[1].querySelector('p').textContent = 'Upload images, choose colors and fonts';
-        features[2].querySelector('h3').textContent = 'Multiple Payment Methods';
-        features[2].querySelector('p').textContent = 'Add as many payment options as you like';
-        features[3].querySelector('h3').textContent = 'All Devices Supported';
-        features[3].querySelector('p').textContent = 'Works great on desktop, tablet and smartphone';
+        features[0].querySelector('h3').textContent = 'Fully Customizable';
+        features[0].querySelector('p').textContent = 'Upload images, choose backgrounds and fonts - everything is customizable';
+        features[1].querySelector('h3').textContent = 'Multiple Links Per Platform';
+        features[1].querySelector('p').textContent = 'Add multiple links for each payment platform - guests are automatically distributed between them';
         
         document.querySelector('.demo-cta h2').textContent = 'Want to create your own event?';
         document.querySelector('.demo-cta p').textContent = 'Fill out the form and receive your gift page link within minutes!';
