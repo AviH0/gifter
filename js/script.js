@@ -425,7 +425,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     langToggle.textContent = lang === 'en' ? 'עברית' : 'English';
     langToggle.onclick = () => {
         const newLang = lang === 'en' ? 'he' : 'en';
-        window.location.href = newLang === 'he' ? 'index.html' : 'en/index.html';
+        const search = window.location.search; // Preserve ?event=xxx
+        const hash = window.location.hash; // Preserve #key
+        
+        if (newLang === 'he') {
+            // Remove /en/ from path
+            const newPath = window.location.pathname.replace(/\/en\//, '/');
+            window.location.href = window.location.origin + newPath + search + hash;
+        } else {
+            // Add /en/ to path
+            const basePath = window.location.pathname.replace(/\/en\//, '/');
+            const pathParts = basePath.split('/').filter(p => p);
+            const repoName = pathParts[0] || '';
+            const newPath = repoName ? `/${repoName}/en/index.html` : '/en/index.html';
+            window.location.href = window.location.origin + newPath + search + hash;
+        }
     };
 
     // Page QR button

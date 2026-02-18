@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Gifts</title>
-    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
-    <!-- <base href="/gifter/"> -->
+    <link rel="icon" href="../assets/favicon.ico" type="image/x-icon">
     <base href="../">
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Wedding Gifts">
@@ -18,6 +18,7 @@
     <meta name="twitter:title" content="Wedding Gifts">
     <meta name="twitter:description" content="Send us a gift!">
     <meta name="twitter:image" content="http://avih0.github.io/gifter/assets/og-default.jpg">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Rubik:wght@400;700&display=swap" rel="stylesheet">
@@ -25,24 +26,82 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <button id="theme-toggle">Dark Mode</button>
-        <button id="lang-toggle">עברית</button>
-        <button id="page-qr-btn" title="Generate page QR code">🔗</button>
-    </header>
-    <main>
-        <h1 id="title">Loading...</h1>
-        <img id="wedding-img" src="assets/wedding.png" alt="Wedding Photo">
-        <p id="message">Loading...</p>
-        <div id="gifts">
-            Loading gifts...
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p id="loading-text" class="loading-text">Loading event...</p>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-text" class="progress-text">0%</p>
         </div>
-    </main>
+    </div>
+
+    <!-- Demo/Landing Page -->
+    <div id="demo-page" class="demo-page" style="display: none;">
+        <header class="demo-header">
+            <button id="demo-lang-toggle" class="demo-btn">עברית</button>
+        </header>
+        <main class="demo-main">
+            <h1 class="demo-title">🎁 Event Gift System</h1>
+            <p class="demo-subtitle">Create an encrypted and secure gift page for your event</p>
+            
+            <div class="demo-features">
+                <div class="demo-feature">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Encrypted & Secure</h3>
+                    <p>All data is encrypted and stored securely on GitHub</p>
+                </div>
+                <div class="demo-feature">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Custom Design</h3>
+                    <p>Upload images, choose colors and fonts</p>
+                </div>
+                <div class="demo-feature">
+                    <div class="feature-icon">💳</div>
+                    <h3>Multiple Payment Methods</h3>
+                    <p>Add as many payment options as you like</p>
+                </div>
+                <div class="demo-feature">
+                    <div class="feature-icon">📱</div>
+                    <h3>All Devices Supported</h3>
+                    <p>Works great on desktop, tablet and smartphone</p>
+                </div>
+            </div>
+
+            <div class="demo-cta">
+                <h2>Want to create your own event?</h2>
+                <p>Fill out the form and receive your gift page link within minutes!</p>
+                <div class="demo-buttons">
+                    <a href="https://forms.gle/7W7NNbJ231Un7cqY7" class="demo-btn-primary" target="_blank">Create New Event</a>
+                    <a href="?event=demo" class="demo-btn-secondary">View Demo Page</a>
+                    <a href="https://github.com/AviH0/gifter" class="demo-btn-secondary" target="_blank">Learn More</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Event Page -->
+    <div id="event-page" style="display: none;">
+        <header>
+            <button id="theme-toggle">Dark Mode</button>
+            <button id="lang-toggle">עברית</button>
+            <button id="page-qr-btn" title="Generate page QR code">🔗</button>
+        </header>
+        <main>
+            <h1 id="title"></h1>
+            <img id="wedding-img" alt="Wedding Photo" style="display: none;">
+            <p id="message"></p>
+            <div id="gifts"></div>
+        </main>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="../js/decrypt.js"></script>
-    <script src="../js/config.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="js/decrypt.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
 <div id="share-modal" class="modal">
@@ -54,8 +113,7 @@
         <button id="show-qr">Show QR</button>
         <div id="qr-display"></div>
     </div>
-</div>
-<div id="page-qr-modal" class="modal page-qr-modal">
+</div><div id="page-qr-modal" class="modal page-qr-modal">
     <div class="modal-content page-qr-content">
         <span class="close-page-qr">&times;</span>
         <h3>Page QR Code</h3>
