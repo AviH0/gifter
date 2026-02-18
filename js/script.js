@@ -5,10 +5,78 @@ if (lang === 'he') {
     document.documentElement.dir = 'rtl';
 }
 
+// Progress tracking
+let progress = 0;
+function updateProgress(value, text) {
+    progress = value;
+    const progressFill = document.getElementById('progress-fill');
+    const progressText = document.getElementById('progress-text');
+    const loadingText = document.getElementById('loading-text');
+    
+    if (progressFill) progressFill.style.width = value + '%';
+    if (progressText) progressText.textContent = Math.round(value) + '%';
+    if (text && loadingText) {
+        loadingText.textContent = lang === 'en' ? text : text;
+    }
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 300);
+    }
+}
+
+function showDemo() {
+    hideLoading();
+    document.getElementById('demo-page').style.display = 'block';
+    
+    // Setup demo page language toggle
+    const demoLangBtn = document.getElementById('demo-lang-toggle');
+    if (demoLangBtn) {
+        demoLangBtn.textContent = lang === 'en' ? 'עברית' : 'English';
+        demoLangBtn.onclick = () => {
+            const newLang = lang === 'en' ? '' : 'en/';
+            window.location.href = window.location.origin + window.location.pathname.replace(/^\/[^\/]*\//, '/' + newLang);
+        };
+    }
+    
+    // Translate demo page if English
+    if (lang === 'en') {
+        document.querySelector('.demo-title').textContent = '🎁 Event Gift System';
+        document.querySelector('.demo-subtitle').textContent = 'Create an encrypted and secure gift page for your event';
+        
+        const features = document.querySelectorAll('.demo-feature');
+        features[0].querySelector('h3').textContent = 'Encrypted & Secure';
+        features[0].querySelector('p').textContent = 'All data is encrypted and stored securely on GitHub';
+        features[1].querySelector('h3').textContent = 'Custom Design';
+        features[1].querySelector('p').textContent = 'Upload images, choose colors and fonts';
+        features[2].querySelector('h3').textContent = 'Multiple Payment Methods';
+        features[2].querySelector('p').textContent = 'Add as many payment options as you like';
+        features[3].querySelector('h3').textContent = 'All Devices Supported';
+        features[3].querySelector('p').textContent = 'Works great on desktop, tablet and smartphone';
+        
+        document.querySelector('.demo-cta h2').textContent = 'Want to create your own event?';
+        document.querySelector('.demo-cta p').textContent = 'Contact the system administrator to get a link to the event creation form';
+        document.querySelector('.demo-btn-primary').textContent = 'Learn More on GitHub';
+    }
+}
+
 // Load config from encrypted URL or fallback to demo
 async function loadConfig() {
     const eventId = new URLSearchParams(window.location.search).get('event');
     const key = window.location.hash.substring(1);
+    
+    // If no event ID, show demo page
+    if (!eventId || !key) {
+        showDemo();
+        return null;
+    }
+    
+    updateProgress(10, lang === 'en' ? 'Loading event...' : 'טוען אירוע...');
     
     if (eventId && key) {
         try {
@@ -34,6 +102,8 @@ async function loadConfig() {
             
             const repo = `${githubUser}/${repoName}`;
             
+            updateProgress(30, lang === 'en' ? 'Fetching config...' : 'מוריד הגדרות...');
+            
             // Try jsDelivr CDN first (faster)
             const cdnUrl = `https://cdn.jsdelivr.net/gh/${repo}@${branch}/public/events/${eventId}/config.enc`;
             
@@ -47,6 +117,8 @@ async function loadConfig() {
                 const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/public/events/${eventId}/config.enc`;
                 response = await fetch(rawUrl);
             }
+            
+            updateProgress(50, lang === 'en' ? 'Decrypting...' : 'מפענח...');
             
             if (!response.ok) throw new Error('Config not found');
             
@@ -82,12 +154,16 @@ async function loadConfig() {
             
             if (!configStr) throw new Error('Decryption returned empty string');
             
+            updateProgress(70, lang === 'en' ? 'Parsing data...' : 'מעבד נתונים...');
+            
             const config = JSON.parse(configStr);
             
             // Validate structure
             if (!config.title || !config.message || !config.gifts) {
                 throw new Error('Invalid config');
             }
+            
+            updateProgress(90, lang === 'en' ? 'Almost ready...' : 'כמעט מוכן...');
             
             return config;
         } catch (err) {
@@ -105,10 +181,14 @@ async function loadConfig() {
 document.addEventListener('DOMContentLoaded', async () => {
     const config = await loadConfig();
     if (!config) {
-        document.getElementById('title').textContent = lang === 'en' ? 'Event Not Found' : 'אירוע לא נמצא';
-        document.getElementById('message').textContent = lang === 'en' ? 'Unable to load event configuration.' : 'לא ניתן לטעון את תצורת האירוע.';
+        // Already handled by showDemo() or error display
         return;
     }
+    
+    updateProgress(95, lang === 'en' ? 'Rendering page...' : 'מציג דף...');
+    
+    // Show event page
+    document.getElementById('event-page').style.display = 'block';
     
     // Get event details for image decryption
     const eventId = new URLSearchParams(window.location.search).get('event');
@@ -186,12 +266,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         const imageUrl = await loadEncryptedImage(config.image, key, repo, branch);
         if (imageUrl) {
             weddingImg.src = imageUrl;
+            weddingImg.style.display = 'block';
         } else {
             weddingImg.style.display = 'none'; // Hide if can't load
         }
-    } else {
+    } else if (config.image) {
         weddingImg.src = config.image;
+        weddingImg.style.display = 'block';
     }
+
+    updateProgress(100, lang === 'en' ? 'Done!' : 'הושלם!');
+    
+    // Hide loading overlay after a brief moment
+    setTimeout(() => {
+        hideLoading();
+    }, 300);
 
     // Populate gifts
     const giftsContainer = document.getElementById('gifts');
