@@ -268,6 +268,35 @@ This is the **multi-event-encrypted** branch implementing the full multi-event p
 - User acceptance testing
 - Performance monitoring
 
+## 🛠️ Management Tools
+
+### Registry Reader
+
+View all created events and their details with the registry reader tool:
+
+```bash
+# View all events in your registry
+npm run read-registry
+```
+
+**What it shows:**
+- Response IDs (FormResponse tracking)
+- Event UUIDs
+- Creator emails
+- Creation and update timestamps
+- Full event URLs with encryption keys
+
+**Configuration:**
+The tool reads from `scripts/.env`:
+```env
+MASTER_KEY=your-master-key-here
+GITHUB_REPO=username/repo-name
+GITHUB_BRANCH=main
+SITE_URL=https://username.github.io/repo-name
+```
+
+See [scripts/REGISTRY_READER.md](scripts/REGISTRY_READER.md) for full documentation.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Areas for improvement:
