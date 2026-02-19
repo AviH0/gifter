@@ -501,20 +501,6 @@ function encryptBinary(binaryData, passphrase) {
     throw new Error('Failed to encrypt binary data: ' + error.toString());
   }
 }
-    
-    // Format: "Salted__" + salt (8 bytes) + encrypted data
-    const header = [83, 97, 108, 116, 101, 100, 95, 95]; // "Salted__"
-    const fullData = header.concat(salt, encrypted);
-    
-    // Return as base64 string (consistent with encryptAES)
-    return Utilities.base64Encode(fullData);
-  } catch (error) {
-    Logger.log('Binary encryption error: ' + error.toString());
-    // Return unencrypted data as fallback
-    Logger.log('WARNING: Image not encrypted!');
-    return binaryData;
-  }
-}
 
 /**
  * Helper: Convert string to UTF-8 bytes (used in encryption)
